@@ -10,6 +10,6 @@ The Android app ships no private server address, provider credential, transcript
 
 ## Automated public-release gate
 
-`scripts/privacy_scan.py` scans files Git would track and rejects categories including machine-specific home paths, likely credentials, credential-bearing Git URLs, non-documentation host IPv4 addresses, runtime databases/logs/packages, signing material, and private-data directories. Release-specific names or identifiers can be supplied without committing them: put one marker per line in the ignored `.privacy-denylist` file, or pass a comma-separated `CONTINUUM_PRIVACY_DENYLIST` value.
+`scripts/privacy_scan.py` scans files Git would track and rejects categories including machine-specific home paths, tool-transcript residue, UUID-like machine identifiers, likely credentials, credential-bearing Git URLs, non-documentation host IPv4 addresses, runtime databases/logs/packages, signing material, and private-data directories. Release-specific names or identifiers can be supplied without committing them: put one marker per line in the ignored `.privacy-denylist` file, or pass a comma-separated `CONTINUUM_PRIVACY_DENYLIST` value.
 
 The scanner is defense in depth, not a substitute for human review. Before publication, inspect `git status`, run the scanner, and review the first commit.

@@ -38,6 +38,11 @@ CRED_GIT_RE = re.compile(
     r"https?://[^/\s:@]+:[^@\s/]+@(?:github\.com|gitlab\.com|bitbucket\.org)",
     re.I,
 )
+TOOL_TRANSCRIPT_MARKER = "[executed on " + "device:"
+UUID_RE = re.compile(
+    r"(?<![0-9A-Fa-f])[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[1-5][0-9A-Fa-f]{3}-"
+    r"[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}(?![0-9A-Fa-f])"
+)
 MACHINE_PATH_RE = re.compile(
     r"(?<![A-Za-z0-9_.-])(?:/home/[A-Za-z0-9_.-]+|/Users/[A-Za-z0-9_.-]+|"
     r"[A-Za-z]:\\\\Users\\\\[A-Za-z0-9_.-]+)(?:[/\\\\]|$)"
@@ -125,6 +130,10 @@ def main() -> int:
             issues.append(f"provider secret pattern: {rel}")
         if CRED_GIT_RE.search(text):
             issues.append(f"credential-bearing git URL: {rel}")
+        if TOOL_TRANSCRIPT_MARKER in text.casefold():
+            issues.append(f"tool transcript residue: {rel}")
+        if UUID_RE.search(text):
+            issues.append(f"UUID-like identifier: {rel}")
 
         for match in ASSIGN_RE.finditer(text):
             value = match.group(2).strip().casefold()
