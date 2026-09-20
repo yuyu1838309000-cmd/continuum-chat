@@ -1,0 +1,54 @@
+# Secrets and runtime configuration
+.env
+.env.*
+!.env.example
+.privacy-denylist
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+key.properties
+local.properties
+
+# Runtime/private data
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+*.jsonl
+*.log
+runtime-data/
+data/
+backups/
+private/
+secrets/
+
+# Flutter / Android
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+android/.gradle/
+*.apk
+*.aab
+*.iml
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+.home/
+
+# Local public-edition configuration
+config/provider.json
+config/mcp.json
+.venv-public/

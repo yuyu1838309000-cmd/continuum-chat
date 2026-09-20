@@ -1,0 +1,6 @@
+{
+  "base_url": "mock://local",
+  "model": "continuum-mock",
+  "api_key": "",
+  "endpoint": "/chat/completions"
+}

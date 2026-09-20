@@ -1,0 +1,10 @@
+{
+  "servers": {
+    "local-files": {
+      "enabled": false,
+      "transport": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "./mcp-demo-workspace"]
+    }
+  }
+}
