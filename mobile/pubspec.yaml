@@ -1,7 +1,7 @@
 name: continuum_chat
 description: "Compact Android client for Continuum Chat."
 publish_to: "none"
-version: 1.0.0+1
+version: 0.1.0+1
 
 environment:
   sdk: ^3.12.2

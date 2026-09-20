@@ -2,18 +2,26 @@
 
 [简体中文](README.md) | **English**
 
-[![CI](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml/badge.svg)](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml)
-
 Continuum Chat is a self-hosted Android AI chat reference app built with **Flutter, FastAPI, and SQLite**. It streams OpenAI-compatible responses, keeps canonical conversation history on the server, supports explicit context epochs, manual memory-card recall, manual MCP tool discovery/invocation, and provider usage analytics. It runs locally with a mock provider, so the core flow can be tested without an API key.
 
-## What this project demonstrates
+<p align="center">
+  <img src="docs/assets/chat.png" width="320" alt="Continuum Chat Chat screen">
+</p>
 
-- **Streaming model I/O:** provider SSE is normalized into text, reasoning, tool, and usage events; Runtime emits `done` after persistence.
-- **Server-owned conversation state:** persisted history is canonical; the UI is not the source of truth.
-- **Explicit context boundaries:** a new context epoch changes future provider context without deleting older history.
-- **Replaceable memory boundary:** memory CRUD/recall is a separate service, with deterministic lexical recall in the baseline.
-- **Tool integration boundary:** standard MCP is supported over stdio; an optional basic JSON-RPC-over-HTTP adapter is available for compatible endpoints.
-- **Safe self-hosting defaults:** loopback binding by default, bearer auth required off loopback, no wildcard CORS default, and no bundled credentials.
+### Core capabilities
+
+- Streaming AI Chat: SSE responses with optional reasoning events
+- Server-owned canonical history persisted by Runtime
+- Context Epochs that change future provider context without deleting history
+- Separate Memory service for CRUD and deterministic recall
+- Manual stdio MCP tool discovery/invocation plus a basic JSON-RPC-over-HTTP adapter
+- Provider input/output token usage analytics by day
+
+**Stack:** Flutter · FastAPI · SQLite · Python · Dart
+
+[![CI](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml/badge.svg)](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml)
+
+[Quick start](#quick-start) · [30-second code tour](#30-second-code-tour) · [Screenshots](#screenshots) · [Architecture](#architecture)
 
 ## 30-second code tour
 
@@ -44,6 +52,24 @@ flowchart LR
 Flutter talks directly to both services. Runtime owns the transcript and provider interaction; Memory owns memory cards and recall. The baseline intentionally does **not** inject Memory results into chat automatically, and MCP invocation is manual rather than automatic model tool execution.
 
 More detail: [Architecture](docs/ARCHITECTURE.md) · [Configuration](docs/CONFIGURATION.md) · [Security](SECURITY.md) · [Privacy](docs/PRIVACY.md)
+
+## Screenshots
+
+These screenshots are generated from deterministic synthetic demo data in the public repository. They contain no real conversations, real Memory data, private server addresses, API keys, or device information. Regenerate them with `scripts/capture_demo_assets.sh`.
+
+<table>
+  <tr>
+    <td align="center"><strong>Chat</strong><br><img src="docs/assets/chat.png" width="240" alt="Chat screenshot"></td>
+    <td align="center"><strong>History</strong><br><img src="docs/assets/history.png" width="240" alt="History screenshot"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Memory</strong><br><img src="docs/assets/memory.png" width="240" alt="Memory screenshot"></td>
+    <td align="center"><strong>Tools / MCP</strong><br><img src="docs/assets/tools.png" width="240" alt="Tools screenshot"></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><strong>Settings</strong><br><img src="docs/assets/settings.png" width="240" alt="Settings screenshot"></td>
+  </tr>
+</table>
 
 ## Quick start
 
@@ -149,9 +175,13 @@ python3 -m unittest discover -s . -p 'test_*.py'
 python3 scripts/privacy_scan.py
 git diff --check
 cd mobile
-dart format --output=none --set-exit-if-changed lib test
+dart format --output=none --set-exit-if-changed lib test tool
 flutter analyze
 flutter test
+flutter test tool/demo_screenshots_test.dart
+cd ..
+python3 scripts/check_demo_assets.py
+cd mobile
 flutter build apk --debug
 ```
 

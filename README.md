@@ -2,18 +2,26 @@
 
 **简体中文** | [English](README_EN.md)
 
-[![CI](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml/badge.svg)](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml)
-
 Continuum Chat 是一个基于 **Flutter、FastAPI 与 SQLite** 的自托管 Android AI 对话参考实现。它支持 OpenAI-compatible 流式响应、服务端 canonical 会话历史、显式 Context Epoch、独立 Memory 服务、手动 MCP 工具发现/调用，以及 Provider Token 使用统计。默认提供本地 Mock Provider，**无需 API Key 即可跑通核心流程**。
 
-## 这个项目展示了什么
+<p align="center">
+  <img src="docs/assets/chat.png" width="320" alt="Continuum Chat Chat 页面">
+</p>
 
-- **流式模型 I/O：** 将 Provider SSE 归一化为 text、reasoning、tool、usage 事件；Runtime 在持久化后发送 `done`。
-- **服务端持有会话状态：** canonical 历史保存在 Runtime，UI 不是事实源。
-- **显式上下文边界：** 新建 Context Epoch 只改变后续发送给模型的上下文，不删除旧历史。
-- **可替换的记忆边界：** Memory CRUD / recall 独立成服务；基线实现使用确定性的 lexical recall。
-- **清晰的工具边界：** 标准 MCP 走 stdio；另提供可选的基础 JSON-RPC-over-HTTP 兼容适配器。
-- **安全的自托管默认值：** 默认仅监听 loopback；非 loopback 必须配置 Bearer Token；CORS 不默认放开 `*`，仓库不内置任何凭据。
+### 核心能力
+
+- Streaming AI Chat：SSE 流式响应，支持可选 reasoning 事件
+- Server-owned canonical history：会话历史由 Runtime 持久化
+- Context Epoch：显式切换后续 Provider 上下文边界，不删除旧历史
+- Memory service：独立 Memory CRUD / recall 服务
+- MCP tools：手动 stdio 工具发现 / 调用，另有基础 JSON-RPC-over-HTTP 适配
+- Provider usage analytics：按日汇总 Provider input/output Token
+
+**技术栈：** Flutter · FastAPI · SQLite · Python · Dart
+
+[![CI](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml/badge.svg)](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml)
+
+[快速开始](#快速开始) · [30 秒代码导览](#30-秒代码导览) · [界面预览](#界面预览) · [系统架构](#系统架构)
 
 ## 30 秒代码导览
 
@@ -44,6 +52,24 @@ flowchart LR
 Flutter 直接连接 Runtime 与 Memory。Runtime 负责 canonical transcript 和 Provider 交互；Memory 负责记忆卡与 recall。基线实现**不会自动把 Memory 召回结果注入聊天上下文**，MCP 也采用手动调用，而不是自动模型工具执行。
 
 进一步说明：[架构](docs/ARCHITECTURE.md) · [配置](docs/CONFIGURATION.md) · [安全](SECURITY.md) · [隐私](docs/PRIVACY.md)
+
+## 界面预览
+
+以下截图由公开仓库内的确定性 Demo 数据生成，不包含真实聊天、真实 Memory、真实服务器地址、API Key 或设备信息。可通过 `scripts/capture_demo_assets.sh` 重新生成。
+
+<table>
+  <tr>
+    <td align="center"><strong>Chat</strong><br><img src="docs/assets/chat.png" width="240" alt="Chat screenshot"></td>
+    <td align="center"><strong>History</strong><br><img src="docs/assets/history.png" width="240" alt="History screenshot"></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Memory</strong><br><img src="docs/assets/memory.png" width="240" alt="Memory screenshot"></td>
+    <td align="center"><strong>Tools / MCP</strong><br><img src="docs/assets/tools.png" width="240" alt="Tools screenshot"></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><strong>Settings</strong><br><img src="docs/assets/settings.png" width="240" alt="Settings screenshot"></td>
+  </tr>
+</table>
 
 ## 快速开始
 
@@ -152,9 +178,13 @@ python3 scripts/privacy_scan.py
 git diff --check
 
 cd mobile
-dart format --output=none --set-exit-if-changed lib test
+dart format --output=none --set-exit-if-changed lib test tool
 flutter analyze
 flutter test
+flutter test tool/demo_screenshots_test.dart
+cd ..
+python3 scripts/check_demo_assets.py
+cd mobile
 flutter build apk --debug
 ```
 

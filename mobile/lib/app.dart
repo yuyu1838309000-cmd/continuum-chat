@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/chat/chat_screen.dart';
@@ -14,10 +15,12 @@ class ContinuumApp extends StatefulWidget {
     super.key,
     this.initialConfig = const ServerConfig(),
     this.preferences,
+    this.httpClient,
   });
 
   final ServerConfig initialConfig;
   final SharedPreferences? preferences;
+  final http.Client? httpClient;
 
   @override
   State<ContinuumApp> createState() => _ContinuumAppState();
@@ -59,6 +62,7 @@ class _ContinuumAppState extends State<ContinuumApp> {
       ),
       config: _config,
       onSaveConfig: _saveConfig,
+      httpClient: widget.httpClient,
     ),
   );
 }
@@ -68,10 +72,12 @@ class NavigationShell extends StatefulWidget {
     super.key,
     required this.config,
     required this.onSaveConfig,
+    this.httpClient,
   });
 
   final ServerConfig config;
   final Future<void> Function(ServerConfig) onSaveConfig;
+  final http.Client? httpClient;
 
   @override
   State<NavigationShell> createState() => _NavigationShellState();
@@ -79,7 +85,10 @@ class NavigationShell extends StatefulWidget {
 
 class _NavigationShellState extends State<NavigationShell> {
   int _index = 0;
-  late final ApiClient _api = ApiClient(widget.config);
+  late final ApiClient _api = ApiClient(
+    widget.config,
+    httpClient: widget.httpClient,
+  );
   late final List<Widget?> _pages = [
     ChatScreen(api: _api),
     null,
