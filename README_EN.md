@@ -2,11 +2,7 @@
 
 [简体中文](README.md) | **English**
 
-Continuum Chat is a self-hosted Android AI chat reference app built with **Flutter, FastAPI, and SQLite**. It streams OpenAI-compatible responses, keeps canonical conversation history on the server, supports explicit context epochs, manual memory-card recall, manual MCP tool discovery/invocation, and provider usage analytics. It runs locally with a mock provider, so the core flow can be tested without an API key.
-
-<p align="center">
-  <img src="docs/assets/chat.png" width="320" alt="Continuum Chat Chat screen">
-</p>
+Continuum Chat is a self-hosted Android AI chat portfolio project built with **Flutter, FastAPI, and SQLite**. The public mobile tree is a sanitized preservation of the product frontend's real UI and interaction architecture, while the included Runtime and Memory services provide a compact, runnable reference backend. The backend runs locally with a mock provider, so its core flow can be tested without an API key.
 
 ### Core capabilities
 
@@ -16,12 +12,15 @@ Continuum Chat is a self-hosted Android AI chat reference app built with **Flutt
 - Separate Memory service for CRUD and deterministic recall
 - Manual stdio MCP tool discovery/invocation plus a basic JSON-RPC-over-HTTP adapter
 - Provider input/output token usage analytics by day
+- A richer preserved Flutter frontend spanning chat/reasoning/tool presentation, history, Memory views, context and settings, model/provider configuration, MCP/plugins/tools, and calendar/diary/content surfaces
+
+The reference backend implements the core runnable Runtime/Memory subset. Some preserved frontend surfaces target additional compatible endpoints or services that are not implemented by this minimal public backend; the repository does not claim that every screen is end-to-end functional against it.
 
 **Stack:** Flutter · FastAPI · SQLite · Python · Dart
 
 [![CI](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml/badge.svg)](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml)
 
-[Quick start](#quick-start) · [30-second code tour](#30-second-code-tour) · [Screenshots](#screenshots) · [Architecture](#architecture)
+[Quick start](#quick-start) · [30-second code tour](#30-second-code-tour) · [Product preview](#product-preview) · [Architecture](#architecture)
 
 ## 30-second code tour
 
@@ -33,8 +32,8 @@ Continuum Chat is a self-hosted Android AI chat reference app built with **Flutt
 | MCP stdio lifecycle and optional JSON-RPC-over-HTTP adapter | [`server/mcp_client.py`](server/mcp_client.py) |
 | Memory API and persistence | [`memory/app.py`](memory/app.py), [`memory/store.py`](memory/store.py) |
 | Deterministic local recall | [`memory/recall.py`](memory/recall.py) |
-| Flutter navigation and screens | [`mobile/lib/app.dart`](mobile/lib/app.dart), [`mobile/lib/features/`](mobile/lib/features/) |
-| Mobile HTTP/SSE client | [`mobile/lib/services/api_client.dart`](mobile/lib/services/api_client.dart) |
+| Flutter app entry and navigation root | [`mobile/lib/main.dart`](mobile/lib/main.dart), [`mobile/lib/pages/`](mobile/lib/pages/) |
+| Chat/runtime, history, Memory, and server configuration clients | [`mobile/lib/services/chat_api.dart`](mobile/lib/services/chat_api.dart), [`mobile/lib/services/runtime_history_api.dart`](mobile/lib/services/runtime_history_api.dart), [`mobile/lib/services/memory_api.dart`](mobile/lib/services/memory_api.dart), [`mobile/lib/services/server_config.dart`](mobile/lib/services/server_config.dart) |
 | Privacy gate | [`scripts/privacy_scan.py`](scripts/privacy_scan.py) |
 
 ## Architecture
@@ -53,23 +52,17 @@ Flutter talks directly to both services. Runtime owns the transcript and provide
 
 More detail: [Architecture](docs/ARCHITECTURE.md) · [Configuration](docs/CONFIGURATION.md) · [Security](SECURITY.md) · [Privacy](docs/PRIVACY.md)
 
-## Screenshots
+## Product preview
 
-These screenshots are generated from deterministic synthetic demo data in the public repository. They contain no real conversations, real Memory data, private server addresses, API keys, or device information. Regenerate them with `scripts/capture_demo_assets.sh`.
+<p align="center">
+  <img src="docs/assets/product-chat.jpg" width="300" alt="Continuum Chat sanitized public demo chat screen">
+</p>
 
-<table>
-  <tr>
-    <td align="center"><strong>Chat</strong><br><img src="docs/assets/chat.png" width="240" alt="Chat screenshot"></td>
-    <td align="center"><strong>History</strong><br><img src="docs/assets/history.png" width="240" alt="History screenshot"></td>
-  </tr>
-  <tr>
-    <td align="center"><strong>Memory</strong><br><img src="docs/assets/memory.png" width="240" alt="Memory screenshot"></td>
-    <td align="center"><strong>Tools / MCP</strong><br><img src="docs/assets/tools.png" width="240" alt="Tools screenshot"></td>
-  </tr>
-  <tr>
-    <td colspan="2" align="center"><strong>Settings</strong><br><img src="docs/assets/settings.png" width="240" alt="Settings screenshot"></td>
-  </tr>
-</table>
+<p align="center">
+  <img src="docs/assets/product-memory.jpg" width="300" alt="Continuum Chat sanitized public demo Memory screen">
+</p>
+
+Both screenshots come from the sanitized Android demo and use synthetic demo data only; they contain no private conversations, real Memory, server addresses, API keys, or device identity information.
 
 ## Quick start
 
@@ -119,7 +112,9 @@ flutter pub get
 flutter run
 ```
 
-The Android emulator defaults are `http://10.0.2.2:8816` and `http://10.0.2.2:8820`. Connection, provider, token, and MCP settings are editable in the app.
+`ServerConfig` defaults to host `127.0.0.1`; Runtime uses port `8816` and Memory uses `8820`. When the backend runs on the development host, Android Emulator users generally need to change the host to `10.0.2.2`. Physical-device users can keep `127.0.0.1` with `adb reverse`, or configure a host reachable from the device.
+
+The sanitized client has no hardcoded server credential. Its optional server token is supplied at build time with `--dart-define=CONTINUUM_SERVER_TOKEN=...`. See [Configuration](docs/CONFIGURATION.md) for the public backend's separate bearer-auth configuration and compatibility scope.
 
 For a physical phone, network binding, bearer-token setup, HTTPS guidance, and the Windows cross-drive Android build note are documented in [Configuration](docs/CONFIGURATION.md) and [Security](SECURITY.md).
 
@@ -133,7 +128,7 @@ For a physical phone, network binding, bearer-token setup, HTTPS guidance, and t
 | Provider support | Offline mock provider plus configurable OpenAI-compatible endpoints |
 | MCP/tools | Manual stdio MCP discovery/invocation; optional basic JSON-RPC-over-HTTP adapter; no automatic model tool execution |
 | Analytics | Daily message totals and provider-reported input/output token usage; mock counts are placeholders |
-| Mobile | Flutter Android client with Chat, History, Memory, Tools, and Settings |
+| Mobile | Sanitized full Flutter frontend preserving chat/reasoning/tool presentation, history, Memory, context/settings, model/provider, MCP/plugin/tool, calendar/diary, and other content surfaces; advanced surfaces may require services beyond the reference backend |
 | Security | Loopback defaults; bearer token required for non-loopback binding |
 | Privacy | Ignored runtime state plus an automated privacy/secret gate |
 
@@ -154,7 +149,7 @@ MCP stdio entries launch local executables with the Runtime account's permission
 ## Repository layout
 
 ```text
-mobile/              Flutter Android client
+mobile/              Sanitized full Flutter frontend (models, pages, services, utilities, widgets)
 server/              Runtime, provider adapter, history, MCP
 memory/              Memory service and local recall
 config/              Safe provider example; real local config is ignored
@@ -175,13 +170,9 @@ python3 -m unittest discover -s . -p 'test_*.py'
 python3 scripts/privacy_scan.py
 git diff --check
 cd mobile
-dart format --output=none --set-exit-if-changed lib test tool
+dart format --output=none --set-exit-if-changed lib test
 flutter analyze
 flutter test
-flutter test tool/demo_screenshots_test.dart
-cd ..
-python3 scripts/check_demo_assets.py
-cd mobile
 flutter build apk --debug
 ```
 

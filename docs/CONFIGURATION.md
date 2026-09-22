@@ -27,7 +27,11 @@ Stdio MCP entries require a `command` and a string `args` list. Stdio is intenti
 
 The optional `transport: "http"` mode accepts an `http://` or `https://` `url` plus string-to-string headers and posts JSON-RPC requests directly. It is a simple compatibility adapter, not a full MCP Streamable HTTP implementation: no MCP HTTP session negotiation or SSE response handling is provided. Use it only with endpoints that explicitly support that contract.
 
-Mobile Settings exposes scheme, host, Runtime port, Memory port, bearer token, provider configuration, and MCP JSON. The emulator host default is `10.0.2.2`.
+The sanitized mobile source centralizes its host in [`server_config.dart`](../mobile/lib/services/server_config.dart), with a default of `127.0.0.1`. Runtime requests use port `8816` and Memory requests use `8820`. The host can be changed in the app; advanced provider, model, plugin, and tool screens may target compatible services beyond the included reference backend.
+
+For an Android Emulator whose backend runs on the host machine, set the mobile host to `10.0.2.2`. For a physical device, either use `adb reverse tcp:8816 tcp:8816` and `adb reverse tcp:8820 tcp:8820` while keeping `127.0.0.1`, or configure an address reachable from the device.
+
+The mobile source contains no hardcoded server credential. An optional token can be injected at build time with `flutter run --dart-define=CONTINUUM_SERVER_TOKEN=...`. The public Python reference backend independently uses `CONTINUUM_API_TOKEN` as a bearer token. A compatible deployment must align its expected header/auth scheme with the client; loopback development can leave both unset.
 
 ## Physical phone
 
@@ -39,7 +43,7 @@ export CONTINUUM_MEMORY_BIND=0.0.0.0
 export CONTINUUM_API_TOKEN='choose-a-long-random-value'
 ```
 
-Start Runtime and Memory with the same environment, then enter the host address, ports `8816` / `8820`, and the same token in mobile Settings.
+Start Runtime and Memory with the same environment, then configure the reachable host in the mobile client. The public services remain on ports `8816` / `8820`. Supply any compatible mobile server token at build time rather than committing it.
 
 Debug Android builds permit cleartext HTTP for local development. For use outside a trusted private network, prefer HTTPS through a trusted reverse proxy or secure tunnel; production-grade internet exposure is outside this reference application's scope. See [Security](../SECURITY.md).
 

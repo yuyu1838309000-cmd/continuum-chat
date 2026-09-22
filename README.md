@@ -2,11 +2,7 @@
 
 **简体中文** | [English](README_EN.md)
 
-Continuum Chat 是一个基于 **Flutter、FastAPI 与 SQLite** 的自托管 Android AI 对话参考实现。它支持 OpenAI-compatible 流式响应、服务端 canonical 会话历史、显式 Context Epoch、独立 Memory 服务、手动 MCP 工具发现/调用，以及 Provider Token 使用统计。默认提供本地 Mock Provider，**无需 API Key 即可跑通核心流程**。
-
-<p align="center">
-  <img src="docs/assets/chat.png" width="320" alt="Continuum Chat Chat 页面">
-</p>
+Continuum Chat 是一个基于 **Flutter、FastAPI 与 SQLite** 的自托管 Android AI 对话作品集项目。公开仓库中的移动端是对真实产品前端 UI 与交互架构的完整保留和脱敏；随附的 Runtime 与 Memory 服务则提供精简、可运行的参考后端。后端默认提供本地 Mock Provider，**无需 API Key 即可跑通核心流程**。
 
 ### 核心能力
 
@@ -16,12 +12,15 @@ Continuum Chat 是一个基于 **Flutter、FastAPI 与 SQLite** 的自托管 And
 - Memory service：独立 Memory CRUD / recall 服务
 - MCP tools：手动 stdio 工具发现 / 调用，另有基础 JSON-RPC-over-HTTP 适配
 - Provider usage analytics：按日汇总 Provider input/output Token
+- 更丰富的 Flutter 前端：涵盖聊天/推理/工具呈现、历史、Memory 视图、上下文与设置、模型/Provider 配置、MCP/插件/工具，以及日历/日记/内容等界面
+
+公开 Runtime/Memory 后端实现核心可运行子集。部分保留的高级前端界面依赖兼容端点或附加服务，精简参考后端并未全部实现；本仓库不声称每个界面都能与随附后端端到端运行。
 
 **技术栈：** Flutter · FastAPI · SQLite · Python · Dart
 
 [![CI](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml/badge.svg)](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml)
 
-[快速开始](#快速开始) · [30 秒代码导览](#30-秒代码导览) · [界面预览](#界面预览) · [系统架构](#系统架构)
+[快速开始](#快速开始) · [30 秒代码导览](#30-秒代码导览) · [成果预览](#成果预览) · [系统架构](#系统架构)
 
 ## 30 秒代码导览
 
@@ -33,8 +32,8 @@ Continuum Chat 是一个基于 **Flutter、FastAPI 与 SQLite** 的自托管 And
 | MCP stdio 生命周期与 JSON-RPC-over-HTTP 适配器 | [`server/mcp_client.py`](server/mcp_client.py) |
 | Memory API 与持久化 | [`memory/app.py`](memory/app.py)、[`memory/store.py`](memory/store.py) |
 | 确定性本地 recall | [`memory/recall.py`](memory/recall.py) |
-| Flutter 导航与页面 | [`mobile/lib/app.dart`](mobile/lib/app.dart)、[`mobile/lib/features/`](mobile/lib/features/) |
-| 移动端 HTTP / SSE Client | [`mobile/lib/services/api_client.dart`](mobile/lib/services/api_client.dart) |
+| Flutter 入口与页面导航 | [`mobile/lib/main.dart`](mobile/lib/main.dart)、[`mobile/lib/pages/`](mobile/lib/pages/) |
+| Chat/Runtime、历史、Memory 与服务器配置 Client | [`mobile/lib/services/chat_api.dart`](mobile/lib/services/chat_api.dart)、[`mobile/lib/services/runtime_history_api.dart`](mobile/lib/services/runtime_history_api.dart)、[`mobile/lib/services/memory_api.dart`](mobile/lib/services/memory_api.dart)、[`mobile/lib/services/server_config.dart`](mobile/lib/services/server_config.dart) |
 | 隐私检查 | [`scripts/privacy_scan.py`](scripts/privacy_scan.py) |
 
 ## 系统架构
@@ -53,23 +52,17 @@ Flutter 直接连接 Runtime 与 Memory。Runtime 负责 canonical transcript �
 
 进一步说明：[架构](docs/ARCHITECTURE.md) · [配置](docs/CONFIGURATION.md) · [安全](SECURITY.md) · [隐私](docs/PRIVACY.md)
 
-## 界面预览
+## 成果预览
 
-以下截图由公开仓库内的确定性 Demo 数据生成，不包含真实聊天、真实 Memory、真实服务器地址、API Key 或设备信息。可通过 `scripts/capture_demo_assets.sh` 重新生成。
+<p align="center">
+  <img src="docs/assets/product-chat.jpg" width="300" alt="Continuum Chat 公开演示聊天页">
+</p>
 
-<table>
-  <tr>
-    <td align="center"><strong>Chat</strong><br><img src="docs/assets/chat.png" width="240" alt="Chat screenshot"></td>
-    <td align="center"><strong>History</strong><br><img src="docs/assets/history.png" width="240" alt="History screenshot"></td>
-  </tr>
-  <tr>
-    <td align="center"><strong>Memory</strong><br><img src="docs/assets/memory.png" width="240" alt="Memory screenshot"></td>
-    <td align="center"><strong>Tools / MCP</strong><br><img src="docs/assets/tools.png" width="240" alt="Tools screenshot"></td>
-  </tr>
-  <tr>
-    <td colspan="2" align="center"><strong>Settings</strong><br><img src="docs/assets/settings.png" width="240" alt="Settings screenshot"></td>
-  </tr>
-</table>
+<p align="center">
+  <img src="docs/assets/product-memory.jpg" width="300" alt="Continuum Chat 公开演示 Memory 页面">
+</p>
+
+以上截图均来自公开演示版 Android 实机运行，仅使用合成演示数据；不包含私人聊天、真实 Memory、服务器地址、API Key 或设备身份信息。
 
 ## 快速开始
 
@@ -119,7 +112,9 @@ flutter pub get
 flutter run
 ```
 
-Android Emulator 默认连接 `http://10.0.2.2:8816` 与 `http://10.0.2.2:8820`。连接地址、Provider、Bearer Token 与 MCP 配置都可以在 App 内修改。
+`ServerConfig` 的默认主机是 `127.0.0.1`；Runtime 使用端口 `8816`，Memory 使用 `8820`。后端运行在开发主机时，Android Emulator 用户通常需要将主机改为 `10.0.2.2`。实体设备可通过 `adb reverse` 继续使用 `127.0.0.1`，或配置设备可访问的主机。
+
+脱敏客户端没有硬编码服务器凭据。可选服务器 Token 通过构建参数 `--dart-define=CONTINUUM_SERVER_TOKEN=...` 提供。公开后端使用独立的 Bearer 鉴权配置，兼容范围详见[配置文档](docs/CONFIGURATION.md)。
 
 实体手机的网络绑定、Bearer Token、HTTPS 建议，以及 Windows 跨盘 Android 构建说明见 [配置文档](docs/CONFIGURATION.md) 与 [安全文档](SECURITY.md)。
 
@@ -133,7 +128,7 @@ Android Emulator 默认连接 `http://10.0.2.2:8816` 与 `http://10.0.2.2:8820`�
 | Provider | 离线 Mock Provider + 可配置 OpenAI-compatible Endpoint |
 | MCP / Tools | 手动 stdio MCP 工具发现/调用；可选基础 JSON-RPC-over-HTTP 适配；无自动模型工具执行 |
 | Analytics | 每日消息量与 Provider 返回的 input/output Token；Mock usage 仅为占位数据 |
-| Mobile | Flutter Android：Chat、History、Memory、Tools、Settings |
+| Mobile | 脱敏完整 Flutter 前端：保留聊天/推理/工具呈现、历史、Memory、上下文/设置、模型/Provider、MCP/插件/工具、日历/日记与其他内容界面；高级界面可能需要参考后端之外的服务 |
 | Security | loopback 默认值；非 loopback 必须配置 Bearer Token |
 | Privacy | Runtime 状态默认不入 Git，并提供自动隐私 / secret gate |
 
@@ -156,7 +151,7 @@ MCP stdio 会以 Runtime 进程账户的权限启动本地可执行程序，Cont
 ## 仓库结构
 
 ```text
-mobile/              Flutter Android 客户端
+mobile/              脱敏完整 Flutter 前端（models、pages、services、utils、widgets）
 server/              Runtime、Provider adapter、history、MCP
 memory/              Memory 服务与本地 recall
 config/              安全的 Provider 示例；真实本地配置不入 Git
@@ -178,13 +173,9 @@ python3 scripts/privacy_scan.py
 git diff --check
 
 cd mobile
-dart format --output=none --set-exit-if-changed lib test tool
+dart format --output=none --set-exit-if-changed lib test
 flutter analyze
 flutter test
-flutter test tool/demo_screenshots_test.dart
-cd ..
-python3 scripts/check_demo_assets.py
-cd mobile
 flutter build apk --debug
 ```
 

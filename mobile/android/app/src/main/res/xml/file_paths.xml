@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 应用内更新（v0.2.104）：APK 下载到 getExternalCacheDirectory() 后，
+     由 FileProvider 授权给系统安装器（content:// 免权限文件访问）。 -->
+<paths>
+    <external-cache-path name="external_cache" path="." />
+    <cache-path name="cache" path="." />
+</paths>

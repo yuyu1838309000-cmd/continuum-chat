@@ -54,6 +54,7 @@ ASSIGN_RE = re.compile(
 PLACEHOLDERS = {
     "configured", "example", "example-token", "test-token", "changeme",
     "replace-me", "your-token", "your-api-key", "choose-a-long-random-value",
+    "model_api_key",  # safe preference key name, not a credential value
 }
 
 

@@ -18,8 +18,10 @@ from .runtime_store import RuntimeStore
 
 
 class ChatRequest(BaseModel):
-    message: str = Field(min_length=1, max_length=100_000)
+    message: str | None = Field(default=None, min_length=1, max_length=100_000)
+    messages: list[dict[str, Any]] | None = None
     conversation_id: str = Field(default="default", min_length=1, max_length=100)
+    generation_id: str | None = Field(default=None, max_length=300)
 
 
 class EpochRequest(BaseModel):
@@ -42,6 +44,37 @@ class McpTestRequest(BaseModel):
     server: str = Field(min_length=1, max_length=300)
     tool: str = Field(min_length=1, max_length=300)
     arguments: dict[str, Any] = Field(default_factory=dict)
+
+
+def _normalize_chat_content(value: Any) -> str:
+    if isinstance(value, str):
+        return value
+    if not isinstance(value, list):
+        return ""
+    parts: list[str] = []
+    for item in value:
+        if not isinstance(item, dict):
+            continue
+        text = item.get("text")
+        if (
+            isinstance(text, str)
+            and item.get("type") in (None, "text", "input_text")
+        ):
+            parts.append(text)
+    return "".join(parts)
+
+
+def _frontend_messages(raw: list[dict[str, Any]]) -> list[dict[str, str]]:
+    normalized: list[dict[str, str]] = []
+    for item in raw:
+        role = str(item.get("role") or "").strip().lower()
+        if role not in {"system", "user", "assistant", "tool"}:
+            continue
+        content = _normalize_chat_content(item.get("content"))
+        if not content:
+            continue
+        normalized.append({"role": role, "content": content})
+    return normalized
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -101,15 +134,37 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @application.post("/chat", dependencies=[Depends(require_api_token)])
     async def chat(body: ChatRequest) -> StreamingResponse:
         store: RuntimeStore = application.state.store
-        store.add_message(body.conversation_id, "user", body.message)
-        context = store.context(body.conversation_id)
+        frontend_mode = body.messages is not None
+
+        if frontend_mode:
+            transcript = _frontend_messages(body.messages or [])
+            last_user = next(
+                (
+                    item["content"]
+                    for item in reversed(transcript)
+                    if item["role"] == "user" and item["content"].strip()
+                ),
+                "",
+            )
+            if not last_user:
+                raise HTTPException(status_code=422, detail="A non-empty user message is required")
+            existing_context = store.context(body.conversation_id)
+            store.add_message(body.conversation_id, "user", last_user)
+            context = store.context(body.conversation_id) if existing_context else transcript
+        else:
+            if body.message is None:
+                raise HTTPException(status_code=422, detail="message is required")
+            store.add_message(body.conversation_id, "user", body.message)
+            context = store.context(body.conversation_id)
+
         provider = ChatProvider(ProviderConfig.load(current.provider_config))
-        generation_id = str(uuid.uuid4())
+        generation_id = (body.generation_id or "").strip() or str(uuid.uuid4())
 
         async def events() -> AsyncIterator[str]:
             text_parts: list[str] = []
             reasoning_parts: list[str] = []
             usage: dict[str, Any] = {}
+            sequence = 0
             try:
                 async for event in provider.stream(context):
                     if event.type == "text":
@@ -118,9 +173,37 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                         reasoning_parts.append(str(event.data))
                     elif event.type == "usage":
                         usage.update(event.data)
-                    payload = {"type": event.type, "data": event.data,
-                               "generation_id": generation_id}
-                    yield f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
+                    if frontend_mode:
+                        if event.type == "text":
+                            payload = {
+                                "choices": [{"delta": {"content": str(event.data)}}]
+                            }
+                        elif event.type == "reasoning":
+                            payload = {
+                                "choices": [
+                                    {"delta": {"reasoning_content": str(event.data)}}
+                                ]
+                            }
+                        elif event.type == "usage":
+                            payload = {"choices": [], "usage": event.data}
+                        else:
+                            continue
+                    else:
+                        payload = {
+                            "type": event.type,
+                            "data": event.data,
+                            "generation_id": generation_id,
+                        }
+                    if frontend_mode:
+                        sequence += 1
+                        yield (
+                            f"id: {sequence}\n"
+                            f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+                        )
+                    else:
+                        yield f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
                 message = store.add_message(
                     body.conversation_id,
                     "assistant",
@@ -129,12 +212,43 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                     generation_id=generation_id,
                     provider_usage=usage,
                 )
-                yield f"data: {json.dumps({'type': 'done', 'message': message}, ensure_ascii=False)}\n\n"
+                if frontend_mode:
+                    sequence += 1
+                    terminal = {
+                        "type": "generation_terminal",
+                        "status": "completed",
+                    }
+                    yield (
+                        f"id: {sequence}\n"
+                        f"data: {json.dumps(terminal, ensure_ascii=False)}\n\n"
+                    )
+                    yield "data: [DONE]\n\n"
+                else:
+                    yield (
+                        "data: "
+                        + json.dumps(
+                            {"type": "done", "message": message},
+                            ensure_ascii=False,
+                        )
+                        + "\n\n"
+                    )
             except Exception as error:
-                payload = {"type": "error", "error": str(error)}
-                yield f"data: {json.dumps(payload)}\n\n"
+                if frontend_mode:
+                    payload = {
+                        "type": "chat_error",
+                        "code": "provider_error",
+                        "message": str(error),
+                    }
+                    yield f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+                else:
+                    payload = {"type": "error", "error": str(error)}
+                    yield f"data: {json.dumps(payload)}\n\n"
 
-        return StreamingResponse(events(), media_type="text/event-stream")
+        return StreamingResponse(
+            events(),
+            media_type="text/event-stream",
+            headers={"X-Generation-ID": generation_id} if frontend_mode else None,
+        )
 
     @application.get(
         "/runtime/history/messages", dependencies=[Depends(require_api_token)]

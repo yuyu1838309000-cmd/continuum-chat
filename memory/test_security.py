@@ -23,6 +23,13 @@ class MemorySecurityTest(unittest.TestCase):
                 requests = [
                     ("GET", "/stats", None),
                     ("GET", "/cards", None),
+                    ("GET", "/cards?ui=true", None),
+                    ("GET", "/days", None),
+                    ("GET", "/archive", None),
+                    ("GET", "/trash", None),
+                    ("GET", "/latest", None),
+                    ("GET", "/mood/history?limit=20", None),
+                    ("GET", "/card/1", None),
                     ("POST", "/cards", {
                         "title": "title", "content": "content", "tags": [],
                     }),
@@ -30,6 +37,13 @@ class MemorySecurityTest(unittest.TestCase):
                         "title": "title", "content": "content", "tags": [],
                     }),
                     ("DELETE", "/cards/missing", None),
+                    ("POST", "/write", {"title": "", "content": "content"}),
+                    ("POST", "/update", {"card_id": 1, "content": "content"}),
+                    ("POST", "/archive", {"card_id": 1, "action": "archive"}),
+                    ("POST", "/trash", {"card_id": 1, "action": "trash"}),
+                    ("POST", "/keywords", {
+                        "card_id": 1, "action": "add", "keyword": "tag",
+                    }),
                     ("GET", "/recall?q=notes", None),
                 ]
                 for method, path, body in requests:

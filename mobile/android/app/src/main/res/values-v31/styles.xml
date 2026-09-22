@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 12+ 系统启动屏（亮色）：#F4F7FB，跟聊天页浅色背景同色
+         （深色模式用 values-night-v31 的 #0D1B2A；不设自定义图标，系统用默认发光猫） -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowSplashScreenBackground">@color/launch_background_light</item>
+        <item name="android:windowBackground">@drawable/launch_background</item>
+    </style>
+</resources>

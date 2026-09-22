@@ -6,7 +6,7 @@ The public repository is designed to stand on its own and starts from fresh Git 
 
 Runtime transcripts, provider usage, memory cards, provider credentials, MCP configuration, bearer tokens, logs, builds, and signing material are runtime state. Git ignore rules exclude their normal locations and file types.
 
-The Android app ships no private server address, provider credential, transcript, or memory database. Connection settings are entered by the user and stored on that device.
+The Android app ships no private server address, provider credential, transcript, or memory database. Its public default host is loopback, user-selected host settings stay on the device, and the optional `CONTINUUM_SERVER_TOKEN` is a build-time value rather than a credential stored in source control.
 
 ## Automated public-release gate
 

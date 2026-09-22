@@ -9,6 +9,7 @@ GeneratedPluginRegistrant.java
 
 # Remember to never publicly share your keystore.
 # See https://flutter.dev/to/reference-keystore
-key.properties
-**/*.keystore
-**/*.jks
+# 私有仓库：正式签名文件入库（Actions 编译需要），勿转公共仓库
+# key.properties
+# **/*.keystore
+# **/*.jks

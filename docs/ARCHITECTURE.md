@@ -1,18 +1,22 @@
 # Architecture
 
-Continuum Chat has three explicit application components: a Flutter client, a Runtime service, and a Memory service. The mobile UI never owns canonical conversation history.
+Continuum Chat has three public application components: a preserved, sanitized Flutter frontend, a Runtime reference service, and a Memory reference service. For the core reference flow, the mobile UI does not own canonical conversation history.
 
 ## Ownership
 
 | Component | Responsibility | Owned state | Entry point |
 | --- | --- | --- | --- |
-| Flutter Android client | Chat UI, history/analytics views, memory CRUD UI, manual MCP tools, settings | Device-local connection/settings preferences | [`mobile/lib/app.dart`](../mobile/lib/app.dart) |
+| Flutter Android client | Product UI/interaction architecture across chat, reasoning/tool presentation, history, Memory, context/settings, model/provider, plugins/tools, calendar/diary, and content views | Device-local preferences and UI state | [`mobile/lib/main.dart`](../mobile/lib/main.dart), [`mobile/lib/pages/`](../mobile/lib/pages/) |
 | Runtime | Chat API, provider streaming, canonical history, context epochs, usage aggregation, MCP transport | Runtime SQLite + ignored provider/MCP config | [`server/app.py`](../server/app.py) |
 | Runtime SQLite | Conversations, epochs, messages, provider usage metadata | Canonical transcript/history | [`server/runtime_store.py`](../server/runtime_store.py) |
 | Memory | Memory-card CRUD and deterministic lexical recall | Memory SQLite | [`memory/app.py`](../memory/app.py) |
 | Memory SQLite | Memory cards and tags | Memory data | [`memory/store.py`](../memory/store.py) |
 
 Memory is deliberately separate from Runtime so its persistence and retrieval strategy can evolve without changing the transcript contract or mobile memory CRUD API.
+
+## Public integration scope
+
+The included Runtime and Memory services implement the core runnable reference subset described below. The preserved frontend is intentionally broader: some screens call compatible product endpoints or supporting services that are not included in the minimal public backend. Their presence documents the real frontend architecture, not a claim that every surface works end to end with these two services.
 
 ## Runtime flow
 

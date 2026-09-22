@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 启动图背景色选择器（默认亮色）：#F4F7FB，跟聊天页浅色背景同色，启动无感。
+     深色模式用 res/color-night/launch_background.xml（#0D1B2A）。 -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/launch_background_light" />
+</selector>

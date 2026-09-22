@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 原生启动图（深色模式）：背景色走 color selector（亮 #F4F7FB / 深 #0D1B2A，
+     跟聊天页背景同色）。 -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/launch_background" />
+</layer-list>

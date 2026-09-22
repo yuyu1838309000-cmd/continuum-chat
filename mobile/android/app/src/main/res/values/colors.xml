@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 启动图背景：跟默认主题「深夜蓝金」聊天页背景同色（亮 #F4F7FB / 暗 #0D1B2A），启动无感 -->
+    <color name="launch_background_light">#F4F7FB</color>
+    <color name="launch_background_dark">#0D1B2A</color>
+</resources>

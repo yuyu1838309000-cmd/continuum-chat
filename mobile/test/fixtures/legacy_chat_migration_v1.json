@@ -1,0 +1,87 @@
+{
+  "migration_version": 1,
+  "thread_id": "main",
+  "windows": [
+    {
+      "source_id": "legacy-archive:archive-1000",
+      "kind": "archive",
+      "ordinal": 1,
+      "legacy_archive_id": "archive-1000",
+      "title": "旧窗口",
+      "opened_at": "2026-08-01T08:00:00.000",
+      "closed_at": "2026-08-01T09:00:00.000",
+      "messages": [
+        {
+          "source_id": "legacy-archive:archive-1000:message:1",
+          "ordinal": 1,
+          "role": "user",
+          "content": "旧问题",
+          "created_at": "2026-08-01T08:00:00.000",
+          "raw_event_id": 501,
+          "parts": [],
+          "attachments": [],
+          "legacy_metadata": {}
+        },
+        {
+          "source_id": "legacy-archive:archive-1000:message:2",
+          "ordinal": 2,
+          "role": "assistant",
+          "content": "旧回答",
+          "created_at": "2026-08-01T08:01:00.000",
+          "raw_event_id": 502,
+          "parts": [],
+          "attachments": [],
+          "legacy_metadata": {}
+        }
+      ]
+    },
+    {
+      "source_id": "legacy-current-v1",
+      "kind": "active",
+      "ordinal": 2,
+      "legacy_archive_id": null,
+      "title": "",
+      "opened_at": "2026-08-30T08:00:00.000",
+      "closed_at": null,
+      "messages": [
+        {
+          "source_id": "legacy-current-v1:message:1",
+          "ordinal": 1,
+          "role": "user",
+          "content": "现在",
+          "created_at": "2026-08-30T08:00:00.000",
+          "raw_event_id": 503,
+          "parts": [
+            {"type": "text", "text": "现在", "status": "done"},
+            {
+              "type": "image",
+              "status": "done",
+              "url": "https://img.example/current.jpg"
+            }
+          ],
+          "attachments": [
+            {
+              "kind": "image",
+              "locator_type": "remote_url",
+              "resource_url": "https://img.example/current.jpg"
+            }
+          ],
+          "legacy_metadata": {"ocrText": "图片文字"}
+        },
+        {
+          "source_id": "legacy-current-v1:message:2",
+          "ordinal": 2,
+          "role": "assistant",
+          "content": "收到",
+          "created_at": "2026-08-30T08:01:00.000",
+          "raw_event_id": null,
+          "parts": [],
+          "attachments": [],
+          "legacy_metadata": {"reasoning": "内部思考"}
+        }
+      ]
+    }
+  ],
+  "snapshot_id": "legacy-chat-v1-77c2f75917492e0c97e5809b0ac9cf9fc608ba182a088980b8628a54b02ed6f3",
+  "snapshot_hash": "77c2f75917492e0c97e5809b0ac9cf9fc608ba182a088980b8628a54b02ed6f3"
+}

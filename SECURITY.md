@@ -2,7 +2,9 @@
 
 Continuum Chat is a self-hosted single-user reference application.
 
-Both Python services bind to loopback by default. If either is configured with a non-loopback bind address, startup requires `CONTINUUM_API_TOKEN`. Configure the same strong random value in Runtime, Memory, and the mobile client.
+Both Python services bind to loopback by default. If either is configured with a non-loopback bind address, startup requires `CONTINUUM_API_TOKEN`; configure the same strong random bearer value for Runtime and Memory.
+
+The sanitized mobile source has no hardcoded credential. It accepts an optional build-time `CONTINUUM_SERVER_TOKEN`. Because the public Python backend and preserved client use separate auth configuration and may expect different header schemes, align them in a compatible deployment rather than committing either value. Loopback development can leave authentication unset.
 
 For use beyond a trusted private network, place the services behind HTTPS and an authentication-aware reverse proxy or secure tunnel. The sample does not implement multi-user authorization, rate limiting, or internet-grade abuse controls.
 
