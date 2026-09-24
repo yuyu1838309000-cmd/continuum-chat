@@ -2,19 +2,19 @@
 
 **简体中文** | [English](README_EN.md)
 
-Continuum Chat 是一个基于 **Flutter、FastAPI 与 SQLite** 的自托管 Android AI 对话作品集项目。公开仓库中的移动端是对真实产品前端 UI 与交互架构的完整保留和脱敏；随附的 Runtime 与 Memory 服务则提供精简、可运行的参考后端。后端默认提供本地 Mock Provider，**无需 API Key 即可跑通核心流程**。
+Continuum Chat 是一个面向**长期个人 Agent**的应用级 **LLM Agent Harness** 作品集项目，基于 **Flutter、FastAPI 与 SQLite**。这里的重点不是训练模型，而是设计模型外面的运行系统：如何组织 Context、Memory、State / Environment、Tools、Trigger、Runtime，以及如何验证这些机制在长期使用中是否真的有效。
+
+公开仓库并不是源产品的完整生产后端，而是一个**脱敏、可运行、可审查的参考切片**：移动端保留真实产品前端的 UI 与交互架构；随附 Runtime、Memory、MCP 与 Provider 适配层提供精简参考实现，默认使用本地 Mock Provider，**无需 API Key 即可跑通核心流程**。为了安全与可复现，公开基线刻意缩小了自主行为范围：Memory 不会自动注入聊天上下文，MCP 采用手动调用，State / Environment 与 Trigger 等高级链路只保留产品层边界或扩展位，不声称在公开后端中完整实现。
 
 ### 核心能力
 
-- Streaming AI Chat：SSE 流式响应，支持可选 reasoning 事件
-- Server-owned canonical history：会话历史由 Runtime 持久化
-- Context Epoch：显式切换后续 Provider 上下文边界，不删除旧历史
-- Memory service：独立 Memory CRUD / recall 服务
-- MCP tools：手动 stdio 工具发现 / 调用，另有基础 JSON-RPC-over-HTTP 适配
-- Provider usage analytics：按日汇总 Provider input/output Token
-- 更丰富的 Flutter 前端：涵盖聊天/推理/工具呈现、历史、Memory 视图、上下文与设置、模型/Provider 配置、MCP/插件/工具，以及日历/日记/内容等界面
-
-公开 Runtime/Memory 后端实现核心可运行子集。部分保留的高级前端界面依赖兼容端点或附加服务，精简参考后端并未全部实现；本仓库不声称每个界面都能与随附后端端到端运行。
+- **Runtime / Context**：服务端持有 canonical history，并用 Context Epoch 控制后续 Provider 可见上下文
+- **Memory boundary**：独立 Memory CRUD / recall 服务，可替换检索策略而不改聊天历史契约
+- **State / Environment boundary**：产品前端保留持续状态、事件与环境类交互边界，公开后端不实现完整环境引擎
+- **Tools / MCP**：手动 stdio 工具发现与调用，另有基础 JSON-RPC-over-HTTP 适配
+- **Provider layer**：OpenAI-compatible Provider 适配、SSE 归一化与 Token usage 记录
+- **Evaluation / observability**：本地测试、隐私扫描、usage analytics 与可复现 Mock 流程
+- **Sanitized product UI**：聊天/推理/工具呈现、历史、Memory、上下文/设置、模型/Provider、MCP/插件/工具、日历/日记与其他内容界面
 
 **技术栈：** Flutter · FastAPI · SQLite · Python · Dart
 
@@ -38,19 +38,72 @@ Continuum Chat 是一个基于 **Flutter、FastAPI 与 SQLite** 的自托管 And
 
 ## 系统架构
 
+从产品视角，Continuum Chat 将系统拆成三层：**Product / UI → Agent Harness → LLM / Provider**。公开仓库完整保留产品层结构，并公开 Harness 中可安全复现的核心子集。
+
 ```mermaid
-flowchart LR
-    A[Flutter Android client] -->|HTTP + SSE| R[Runtime :8816]
-    A -->|HTTP| M[Memory :8820]
-    R --> H[(Runtime SQLite)]
-    M --> D[(Memory SQLite)]
-    R --> P[OpenAI-compatible provider]
-    R --> T[MCP stdio / compatible JSON-RPC tools]
+flowchart TB
+    subgraph UI[Product / UI]
+      A[Flutter Android client]
+      U[Chat · Memory · Tools · Settings · State/Environment surfaces]
+      A --> U
+    end
+
+    subgraph H[Application-level Agent Harness]
+      R[Runtime / canonical history]
+      C[Context epochs]
+      M[Memory service]
+      S[State / Environment boundary]
+      T[Tools / MCP]
+      G[Trigger / event boundary]
+      E[Evaluation / observability]
+    end
+
+    P[OpenAI-compatible LLM / Provider]
+    DB1[(Runtime SQLite)]
+    DB2[(Memory SQLite)]
+
+    UI --> R
+    UI --> M
+    UI --> T
+    R --> C
+    R --> P
+    R --> DB1
+    M --> DB2
+    R -. product extension .-> S
+    R -. product extension .-> G
+    R --> E
 ```
 
-Flutter 直接连接 Runtime 与 Memory。Runtime 负责 canonical transcript 和 Provider 交互；Memory 负责记忆卡与 recall。基线实现**不会自动把 Memory 召回结果注入聊天上下文**，MCP 也采用手动调用，而不是自动模型工具执行。
+公开基线中的 Runtime 负责 canonical transcript、Context Epoch、Provider 交互与 usage；Memory 负责记忆卡与确定性 recall；MCP 采用手动调用。State / Environment 与 Trigger 在这里作为产品架构边界和扩展位呈现，**不等于公开后端已经实现完整自主 Agent 循环**。
 
 进一步说明：[架构](docs/ARCHITECTURE.md) · [配置](docs/CONFIGURATION.md) · [安全](SECURITY.md) · [隐私](docs/PRIVACY.md)
+
+## 这个项目是什么 / 不是什么
+
+**它是：**
+
+- 面向长期个人 Agent 的应用级 Harness / 运行框架作品集
+- 对 Context、Memory、Tools、State / Environment、Runtime 等模型外层能力的工程化组织
+- 一个强调真实问题复现、方案取舍与回归验证的 AI 应用项目
+
+**它不是：**
+
+- 自研基础模型或模型训练项目
+- 底层 Embedding / RAG 算法研究项目
+- Multi-Agent Framework；当前主线仍是一个核心 Agent + 多种能力边界
+- 在公开仓库里完整开放的自主 Agent 生产系统
+- “Coding Agent 内置子 Agent”示例；Codex 等 Coding Agent 主要用于本项目的开发协作
+
+## 脱敏迭代证据
+
+以下数字来自源项目的真实长期迭代，用于说明问题规模与验证方式；公开仓库仅保留可安全公开的参考实现，并不声称这些结果都可由当前精简基线直接复现。
+
+- 重建 **99 个历史会话窗口**，用于长期记忆迁移与召回验证
+- 三轮模型 / Prompt / Context 回放累计 **148 条测试结果**
+- 人物指代召回阈值专项回归 **15/15 PASS**
+- 主动触发规则专项回归 **96/96 PASS**
+- 在部分真实分支中定位到约 **34%–39%** 的额外重复历史内容
+- Runtime 迁移覆盖 **35 个会话窗口、4,907 条历史消息**
 
 ## 成果预览
 
@@ -125,6 +178,8 @@ flutter run
 | 流式聊天 | OpenAI-compatible Provider SSE，支持可选 reasoning 事件 |
 | Context 管理 | Runtime API 显式切换 Context Epoch，历史消息仍完整保留 |
 | Memory | 记忆卡 CRUD + 确定性 lexical recall |
+| State / Environment | 产品前端保留持续状态/环境类交互边界；精简公开后端不实现完整环境引擎 |
+| Trigger / proactive | 作为源产品架构中的能力边界保留在文档定位中；公开基线不实现自动触发循环 |
 | Provider | 离线 Mock Provider + 可配置 OpenAI-compatible Endpoint |
 | MCP / Tools | 手动 stdio MCP 工具发现/调用；可选基础 JSON-RPC-over-HTTP 适配；无自动模型工具执行 |
 | Analytics | 每日消息量与 Provider 返回的 input/output Token；Mock usage 仅为占位数据 |
@@ -183,7 +238,7 @@ CI 会执行 Python compile/tests/privacy scan、Dart format、Flutter analyze/t
 
 ## 项目边界
 
-Continuum Chat 是一个**单用户、自托管的参考实现**。它不声称提供多用户授权、互联网级滥用防护、自动工具执行、语义向量记忆，或完整部署自动化。
+Continuum Chat 是一个**单用户、自托管的 Agent Harness 参考实现与作品集切片**。它重点展示长期 Agent 所需的模型外层系统边界与工程取舍；公开基线不声称提供多用户授权、互联网级滥用防护、自动工具执行、完整 State / Environment 引擎、自动 Trigger 循环、语义向量记忆或完整部署自动化。
 
 ## License
 
