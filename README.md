@@ -62,9 +62,9 @@ flowchart TB
     DB1[(Runtime SQLite)]
     DB2[(Memory SQLite)]
 
-    UI --> R
-    UI --> M
-    UI --> T
+    A --> R
+    A --> M
+    A --> T
     R --> C
     R --> P
     R --> DB1
