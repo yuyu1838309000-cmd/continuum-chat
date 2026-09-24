@@ -2,19 +2,19 @@
 
 [简体中文](README.md) | **English**
 
-Continuum Chat is a self-hosted Android AI chat portfolio project built with **Flutter, FastAPI, and SQLite**. The public mobile tree is a sanitized preservation of the product frontend's real UI and interaction architecture, while the included Runtime and Memory services provide a compact, runnable reference backend. The backend runs locally with a mock provider, so its core flow can be tested without an API key.
+Continuum Chat is an application-level **LLM Agent Harness** portfolio project for **long-running personal agents**, built with **Flutter, FastAPI, and SQLite**. The focus is not model training; it is the system around the model: how Context, Memory, State / Environment, Tools, Trigger, Runtime, and evaluation fit together so an agent can remain coherent over long-term use.
+
+The public repository is **not the complete production backend** of the source product. It is a sanitized, runnable, reviewable reference slice: the mobile tree preserves the real product UI and interaction architecture, while the included Runtime, Memory, MCP, and Provider layers expose a compact reference backend. A local mock provider lets the core flow run without an API key. For safety and reproducibility, the public baseline intentionally narrows autonomous behavior: Memory is not injected into chat automatically, MCP calls are manual, and advanced State / Environment and Trigger paths are represented as product-level boundaries or extension points rather than claimed as fully implemented public backend behavior.
 
 ### Core capabilities
 
-- Streaming AI Chat: SSE responses with optional reasoning events
-- Server-owned canonical history persisted by Runtime
-- Context Epochs that change future provider context without deleting history
-- Separate Memory service for CRUD and deterministic recall
-- Manual stdio MCP tool discovery/invocation plus a basic JSON-RPC-over-HTTP adapter
-- Provider input/output token usage analytics by day
-- A richer preserved Flutter frontend spanning chat/reasoning/tool presentation, history, Memory views, context and settings, model/provider configuration, MCP/plugins/tools, and calendar/diary/content surfaces
-
-The reference backend implements the core runnable Runtime/Memory subset. Some preserved frontend surfaces target additional compatible endpoints or services that are not implemented by this minimal public backend; the repository does not claim that every screen is end-to-end functional against it.
+- **Runtime / Context:** server-owned canonical history with Context Epochs controlling future provider-visible context
+- **Memory boundary:** independent Memory CRUD / recall service with a replaceable retrieval strategy
+- **State / Environment boundary:** preserved product surfaces and event/state integration points; no full public environment engine
+- **Tools / MCP:** manual stdio discovery/invocation plus a basic JSON-RPC-over-HTTP adapter
+- **Provider layer:** OpenAI-compatible provider adapter, SSE normalization, and token-usage persistence
+- **Evaluation / observability:** local tests, privacy scanning, usage analytics, and deterministic mock flows
+- **Sanitized product UI:** chat/reasoning/tool presentation, history, Memory, context/settings, model/provider, MCP/plugins/tools, calendar/diary, and other content surfaces
 
 **Stack:** Flutter · FastAPI · SQLite · Python · Dart
 
@@ -38,19 +38,72 @@ The reference backend implements the core runnable Runtime/Memory subset. Some p
 
 ## Architecture
 
+From a product perspective, Continuum Chat separates three layers: **Product / UI → Agent Harness → LLM / Provider**. The public repository preserves the product layer and exposes the subset of the harness that can be published safely and reproduced locally.
+
 ```mermaid
-flowchart LR
-    A[Flutter Android client] -->|HTTP + SSE| R[Runtime :8816]
-    A -->|HTTP| M[Memory :8820]
-    R --> H[(Runtime SQLite)]
-    M --> D[(Memory SQLite)]
-    R --> P[OpenAI-compatible provider]
-    R --> T[MCP stdio / compatible JSON-RPC tools]
+flowchart TB
+    subgraph UI[Product / UI]
+      A[Flutter Android client]
+      U[Chat · Memory · Tools · Settings · State/Environment surfaces]
+      A --> U
+    end
+
+    subgraph H[Application-level Agent Harness]
+      R[Runtime / canonical history]
+      C[Context epochs]
+      M[Memory service]
+      S[State / Environment boundary]
+      T[Tools / MCP]
+      G[Trigger / event boundary]
+      E[Evaluation / observability]
+    end
+
+    P[OpenAI-compatible LLM / Provider]
+    DB1[(Runtime SQLite)]
+    DB2[(Memory SQLite)]
+
+    UI --> R
+    UI --> M
+    UI --> T
+    R --> C
+    R --> P
+    R --> DB1
+    M --> DB2
+    R -. product extension .-> S
+    R -. product extension .-> G
+    R --> E
 ```
 
-Flutter talks directly to both services. Runtime owns the transcript and provider interaction; Memory owns memory cards and recall. The baseline intentionally does **not** inject Memory results into chat automatically, and MCP invocation is manual rather than automatic model tool execution.
+In the public baseline, Runtime owns the canonical transcript, Context Epochs, provider interaction, and usage; Memory owns memory cards and deterministic recall; MCP invocation is manual. State / Environment and Trigger are shown as architectural boundaries and extension points. **This does not claim that the public backend already implements a complete autonomous agent loop.**
 
 More detail: [Architecture](docs/ARCHITECTURE.md) · [Configuration](docs/CONFIGURATION.md) · [Security](SECURITY.md) · [Privacy](docs/PRIVACY.md)
+
+## What this project is / is not
+
+**It is:**
+
+- an application-level harness / runtime portfolio for long-running personal agents
+- an engineering organization of Context, Memory, Tools, State / Environment, Runtime, and related model-external capabilities
+- an AI application project centered on reproducing real failures, choosing trade-offs, and validating fixes
+
+**It is not:**
+
+- a foundation-model training project
+- a low-level Embedding / RAG algorithm research project
+- a Multi-Agent Framework; the main design is still one core agent with multiple capability boundaries
+- a fully open production autonomous-agent backend
+- a demonstration of an embedded Coding Agent sub-agent; Codex and similar Coding Agents are primarily used to develop this project
+
+## Sanitized iteration evidence
+
+The following numbers come from long-running iteration on the source product and are included to show problem scale and validation practice. The public repository keeps only a safe reference subset and does not claim that every result is directly reproducible from the minimal baseline.
+
+- rebuilt **99 historical conversation windows** for long-term memory migration and recall validation
+- **148 model / Prompt / Context replay results** across three evaluation rounds
+- person-reference recall-threshold regression: **15/15 PASS**
+- proactive trigger-policy regression: **96/96 PASS**
+- identified roughly **34%–39%** extra duplicated history in selected real branches
+- Runtime migration covered **35 conversation windows and 4,907 historical messages**
 
 ## Product preview
 
@@ -125,6 +178,8 @@ For a physical phone, network binding, bearer-token setup, HTTPS guidance, and t
 | Streaming chat | SSE from an OpenAI-compatible provider, including optional reasoning events |
 | Context management | Runtime API for explicit context-epoch rollover; persisted history remains intact |
 | Memory | Manual memory-card CRUD and deterministic lexical recall |
+| State / Environment | Persistent-state/environment interaction boundaries are preserved in the product architecture; the minimal public backend does not include a full environment engine |
+| Trigger / proactive | Represented as a source-product architectural boundary; the public baseline does not implement an automatic trigger loop |
 | Provider support | Offline mock provider plus configurable OpenAI-compatible endpoints |
 | MCP/tools | Manual stdio MCP discovery/invocation; optional basic JSON-RPC-over-HTTP adapter; no automatic model tool execution |
 | Analytics | Daily message totals and provider-reported input/output token usage; mock counts are placeholders |
@@ -182,7 +237,7 @@ Runtime databases, transcripts, memory data, logs, generated local configs, buil
 
 ## Scope
 
-Continuum Chat is intentionally a **single-user, self-hosted reference application**. It does not claim multi-user authorization, internet-grade abuse controls, autonomous tool execution, semantic memory retrieval, or deployment automation.
+Continuum Chat is intentionally a **single-user, self-hosted Agent Harness reference implementation and portfolio slice**. It focuses on model-external system boundaries and engineering trade-offs for long-running agents; the public baseline does not claim multi-user authorization, internet-grade abuse controls, autonomous tool execution, a complete State / Environment engine, an automatic Trigger loop, semantic memory retrieval, or deployment automation.
 
 ## License
 
