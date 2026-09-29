@@ -1,6 +1,6 @@
 # Architecture
 
-Continuum Chat is organized as an application-level **LLM Agent Harness** for long-running personal-agent use cases. The public repository exposes a sanitized, runnable subset of that architecture: a preserved Flutter product frontend, a Runtime reference service, and a Memory reference service. The goal of this document is to distinguish the broader product architecture from the smaller public backend so the repository can show the real system boundaries without overstating what the open baseline implements.
+Continuum Chat is organized as an application-level **LLM Agent Harness** for long-running personal-agent use cases. The public repository exposes a sanitized, runnable subset of that architecture: a Flutter product snapshot, a Runtime reference service, and a Memory reference service. The goal of this document is to distinguish the broader product architecture from the smaller public backend so the repository can show the real system boundaries without overstating what the open baseline implements.
 
 ## Conceptual model
 
@@ -53,7 +53,7 @@ Memory is deliberately separate from Runtime so its persistence and retrieval st
 
 ## Public integration scope
 
-The included Runtime and Memory services implement the core runnable reference subset described below. The preserved frontend is intentionally broader: some screens call compatible product endpoints or supporting services that are not included in the minimal public backend. Their presence documents the real frontend architecture, not a claim that every surface works end to end with these two services.
+The included Runtime and Memory services implement the core runnable reference subset described below. The public frontend snapshot is intentionally broader: some screens call compatible product endpoints or supporting services that are not included in the minimal public backend. Their presence documents the real frontend architecture, not a claim that every surface works end to end with these two services.
 
 ## Runtime flow
 
