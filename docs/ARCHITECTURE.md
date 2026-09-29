@@ -100,7 +100,7 @@ The harness is treated as a system that must be measured, not only prompted. The
 
 ## Source-product evolution
 
-The public baseline deliberately stays smaller than the source product. Long-running production use has since validated additional lifecycle mechanisms around provider-visible Memory receipts, tool execution receipts, immutable cross-window handoff, final-payload context inspection, finite Pending states, and single-owner proactive execution.
+The public baseline deliberately stays smaller than the source product. Long-running production use has since validated additional lifecycle mechanisms around provider-visible Memory receipts, tool execution receipts, immutable cross-window handoff, final-payload context inspection, finite Pending states, single-owner proactive execution, and an evidence-gated Self Model whose adoption is frozen at ContextEpoch boundaries.
 
 These mechanisms are documented as sanitized engineering cases rather than copied wholesale into the public backend. See [Source-product case studies](CASE_STUDIES_EN.md) / [源项目工程案例](CASE_STUDIES.md).
 
