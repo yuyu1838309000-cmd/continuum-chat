@@ -16,6 +16,8 @@ Continuum Chat 是一个面向**长期个人 Agent**的应用级 **LLM Agent Har
 - **Evaluation / observability**：本地测试、隐私扫描、usage analytics 与可复现 Mock 流程
 - **Sanitized product UI**：聊天/推理/工具呈现、历史、Memory、上下文/设置、模型/Provider、MCP/插件/工具、日历/日记与其他内容界面
 
+> **作品集更新（2026-09-29）**：公开仓库继续保持可运行、可审查的精简基线；源产品已经继续演进到 Memory 注入回执、Tool execution receipt、Context handoff / Inspector、有限 Pending 生命周期与主动行为 ownership 等更复杂的长期 Agent 机制。为了不把私人生产逻辑直接公开，这些能力先以脱敏案例记录在 [源项目工程案例](docs/CASE_STUDIES.md) 中，而不是整套复制进公开后端。
+
 **技术栈：** Flutter · FastAPI · SQLite · Python · Dart
 
 [![CI](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml/badge.svg)](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml)
