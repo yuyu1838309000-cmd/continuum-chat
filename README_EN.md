@@ -14,7 +14,7 @@ The public repository is **not the complete production backend** of the source p
 - **Tools / MCP:** manual stdio discovery/invocation plus a basic JSON-RPC-over-HTTP adapter
 - **Provider layer:** OpenAI-compatible provider adapter, SSE normalization, and token-usage persistence
 - **Evaluation / observability:** local tests, privacy scanning, usage analytics, and deterministic mock flows
-- **Sanitized product UI:** chat/reasoning/tool presentation, history, Memory, context/settings, model/provider, MCP/plugins/tools, calendar/diary, and other content surfaces
+- **Sanitized product UI snapshot:** preserves the major chat/reasoning/tool, history, Memory, context/settings, model/provider, MCP/plugin/tool, calendar/diary, and content surfaces from the public snapshot
 
 > **Portfolio refresh (2026-09-29):** the public repository intentionally remains a runnable, reviewable baseline while the source product continues to evolve. More advanced long-running-agent mechanisms—provider-visible Memory receipts, tool execution receipts, immutable handoff / Context inspection, finite Pending lifecycles, and single-owner proactive execution—are documented as sanitized [source-product case studies](docs/CASE_STUDIES_EN.md) instead of being copied wholesale into the public backend.
 
@@ -40,7 +40,7 @@ The public repository is **not the complete production backend** of the source p
 
 ## Architecture
 
-From a product perspective, Continuum Chat separates three layers: **Product / UI → Agent Harness → LLM / Provider**. The public repository preserves the product layer and exposes the subset of the harness that can be published safely and reproduced locally.
+From a product perspective, Continuum Chat separates three layers: **Product / UI → Agent Harness → LLM / Provider**. The public repository preserves a sanitized product-layer snapshot and exposes the subset of the harness that can be published safely and reproduced locally; later source-product UI and lifecycle additions do not automatically flow into this repository.
 
 ```mermaid
 flowchart TB
@@ -185,7 +185,7 @@ For a physical phone, network binding, bearer-token setup, HTTPS guidance, and t
 | Provider support | Offline mock provider plus configurable OpenAI-compatible endpoints |
 | MCP/tools | Manual stdio MCP discovery/invocation; optional basic JSON-RPC-over-HTTP adapter; no automatic model tool execution |
 | Analytics | Daily message totals and provider-reported input/output token usage; mock counts are placeholders |
-| Mobile | Sanitized full Flutter frontend preserving chat/reasoning/tool presentation, history, Memory, context/settings, model/provider, MCP/plugin/tool, calendar/diary, and other content surfaces; advanced surfaces may require services beyond the reference backend |
+| Mobile | Sanitized Flutter product snapshot preserving the major chat/reasoning/tool, history, Memory, context/settings, model/provider, MCP/plugin/tool, calendar/diary, and content surfaces; later source-product additions are not automatically synchronized, and advanced surfaces may require services beyond the reference backend |
 | Security | Loopback defaults; bearer token required for non-loopback binding |
 | Privacy | Ignored runtime state plus an automated privacy/secret gate |
 
@@ -206,7 +206,7 @@ MCP stdio entries launch local executables with the Runtime account's permission
 ## Repository layout
 
 ```text
-mobile/              Sanitized full Flutter frontend (models, pages, services, utilities, widgets)
+mobile/              Sanitized Flutter product snapshot (models, pages, services, utilities, widgets)
 server/              Runtime, provider adapter, history, MCP
 memory/              Memory service and local recall
 config/              Safe provider example; real local config is ignored
