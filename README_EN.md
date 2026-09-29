@@ -16,7 +16,7 @@ The public repository is **not the complete production backend** of the source p
 - **Evaluation / observability:** local tests, privacy scanning, usage analytics, and deterministic mock flows
 - **Sanitized product UI snapshot:** preserves the major chat/reasoning/tool, history, Memory, context/settings, model/provider, MCP/plugin/tool, calendar/diary, and content surfaces from the public snapshot
 
-> **Portfolio refresh (2026-09-29):** the public repository intentionally remains a runnable, reviewable baseline while the source product continues to evolve. More advanced long-running-agent mechanisms—provider-visible Memory receipts, tool execution receipts, immutable handoff / Context inspection, finite Pending lifecycles, and single-owner proactive execution—are documented as sanitized [source-product case studies](docs/CASE_STUDIES_EN.md) instead of being copied wholesale into the public backend.
+> **Portfolio refresh (2026-09-29):** the public repository intentionally remains a runnable, reviewable baseline while the source product continues to evolve. More advanced long-running-agent mechanisms—provider-visible Memory receipts, tool execution receipts, immutable handoff / Context inspection, finite Pending lifecycles, single-owner proactive execution, and an evidence-gated Self Model / personality-maintenance loop—are documented as sanitized [source-product case studies](docs/CASE_STUDIES_EN.md) instead of being copied wholesale into the public backend.
 
 **Stack:** Flutter · FastAPI · SQLite · Python · Dart
 
