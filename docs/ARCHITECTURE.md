@@ -98,6 +98,12 @@ A complete agent action loop requires the result of an action to return to the r
 
 The harness is treated as a system that must be measured, not only prompted. The public repository includes deterministic mock flows, unit tests, CI, provider-usage persistence, and privacy scanning. The source project additionally used replay/regression sets to validate long-running behavior changes. Those source-project metrics are summarized in the README and are clearly labeled as sanitized iteration evidence rather than public-baseline benchmark claims.
 
+## Source-product evolution
+
+The public baseline deliberately stays smaller than the source product. Long-running production use has since validated additional lifecycle mechanisms around provider-visible Memory receipts, tool execution receipts, immutable cross-window handoff, final-payload context inspection, finite Pending states, and single-owner proactive execution.
+
+These mechanisms are documented as sanitized engineering cases rather than copied wholesale into the public backend. See [Source-product case studies](CASE_STUDIES_EN.md) / [源项目工程案例](CASE_STUDIES.md).
+
 ## Scope terminology
 
 - **Agent** refers to the behaviorally coherent system using an LLM plus model-external state, tools, and execution rules; it is not synonymous with the model endpoint itself.
