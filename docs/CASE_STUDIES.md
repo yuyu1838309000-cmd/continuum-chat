@@ -179,6 +179,80 @@ Pending 从“所有没解决的东西”变成真正可执行、可结束、可
 
 ---
 
+## 6. Self Model：人格自我维护不能退化成“模型自己夸自己”
+
+### 问题
+
+长期 Agent 会逐渐形成类似“我通常怎么做 / 我是什么样的人”的稳定自我认识。最粗暴的做法是把这些内容直接写进 Prompt 或 Memory，但这样会有几个问题：
+
+- 用户一句评价就可能被永久写成人格；
+- 模型在 maintenance 里重复“我就是这样”会形成自证循环；
+- 一条偶发行为可能被过度概括成稳定特质；
+- 人格一旦热更新，当前长窗口的输入可能在用户无感知的情况下突然改变。
+
+### 设计决定
+
+源产品把 **Self Model** 从普通 Memory 中拆成独立系统，并把“谁可以提议、谁可以修改、什么算证据、什么时候生效”分开。
+
+核心链路是：
+
+```text
+真实对话 / 工具 / 主动行为
+        ↓
+canonical evidence
+        ↓
+Curator: support / contradiction / no_match
+        ↓
+review suggestion（只提议，不改人格）
+        ↓
+主 Agent review / revise
+        ↓
+重新校验当前 evidence
+        ↓
+Deterministic Gate
+        ↓
+append-only claim version
+        ↓
+future ContextEpoch adoption
+```
+
+关键约束包括：
+
+- Curator **没有**人格 claim mutation 权限；
+- suggestion、summary、review event 都不算成熟度证据；
+- maintenance 里模型自己重复某条自我描述，不算“这条人格又被现实支持了一次”；
+- 单一 user preference 不能直接建立人格；
+- 只有当前有效、agent-origin、彼此独立的真实证据才能推动成熟度；
+- 至少需要多个独立 evidence roots，并且没有有效 contradiction，claim 才可能从观察态进入稳定态；
+- 最终成熟度由 deterministic Gate 决定，不由 LLM 自报；
+- Provider-visible adoption 只在 **ContextEpoch 边界**冻结，当前窗口不会因为后台 store 变化而偷偷换人格。
+
+### 为什么不直接塞进 Memory
+
+Memory 更适合回答：
+
+> “以前发生过什么？”
+
+Self Model 要回答的是：
+
+> “基于一段时间的真实行为，我现在对自己的稳定认识是什么？”
+
+两者的证据标准、生命周期和修改权限并不相同。把它们混在一起，会让一次事件既是“历史事实”又直接变成“人格定义”。
+
+### 结果
+
+Self Model 从“写几条人设 Prompt”变成了一条可审计的自我维护链：
+
+> **真实行为产生证据 → 候选解释 → 主 Agent 复核 → 确定性门控 → 新窗口边界采用**
+
+这让人格变化既可以发生，又不会因为一句评价、一次偶发行为或 maintenance 自我复述而无限漂移。
+
+### 公开仓库边界
+
+公开基线当前不包含这套 production Self Model store / curator / maintenance runtime。这里仅公开经过脱敏的架构与工程取舍；私人人格内容、真实 evidence 和生产数据库不会进入公开仓库。
+
+---
+
 ## 这些案例共同说明什么
 
 Continuum Chat 的长期迭代逐渐形成了几个稳定原则：
