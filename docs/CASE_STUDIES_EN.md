@@ -133,6 +133,80 @@ A proactive action can be explained:
 
 ---
 
+## 6. Self Model: personality maintenance must not become self-confirming prompt drift
+
+### Problem
+
+A long-running agent gradually forms stable beliefs such as “how I usually behave” or “what kind of agent I am.” The simplest implementation is to write those beliefs directly into Prompt or Memory, but that creates several failure modes:
+
+- one user comment can become a permanent personality fact;
+- maintenance turns can repeatedly say “this is who I am” and create a self-confirming loop;
+- one-off behavior can be overgeneralized into a stable trait;
+- hot updates can silently change the active long-window input mid-conversation.
+
+### Design decision
+
+The source product separates **Self Model** from ordinary Memory and separates proposal, mutation, evidence, maturity, and adoption.
+
+The lifecycle is:
+
+```text
+real conversation / tool / proactive behavior
+        ↓
+canonical evidence
+        ↓
+Curator: support / contradiction / no_match
+        ↓
+review suggestion (proposal only; no mutation)
+        ↓
+primary agent review / revise
+        ↓
+re-validate current evidence
+        ↓
+Deterministic Gate
+        ↓
+append-only claim version
+        ↓
+future ContextEpoch adoption
+```
+
+Important constraints:
+
+- the Curator has **no** claim-mutation authority;
+- suggestions, summaries, and review events do not count as maturity evidence;
+- a maintenance turn repeating the agent's own self-description does not count as another independent support event;
+- a user preference alone cannot establish personality;
+- only current, agent-origin, independent evidence can advance maturity;
+- multiple independent evidence roots are required, with no active contradiction, before a claim can become established;
+- maturity is decided by a deterministic gate rather than by the LLM declaring itself “stable”;
+- provider-visible adoption is frozen at a **ContextEpoch boundary**, so the active conversation does not silently change personality when the store updates.
+
+### Why this is not ordinary Memory
+
+Memory is primarily about:
+
+> “What happened before?”
+
+Self Model is about:
+
+> “Given repeated real behavior over time, what stable belief about myself is justified now?”
+
+Those two systems need different evidence rules, lifecycles, and mutation authority. Mixing them allows a single event to become both a historical fact and an immediate personality definition.
+
+### Result
+
+Personality maintenance becomes an auditable lifecycle instead of a few editable persona strings:
+
+> **real behavior → evidence → candidate interpretation → primary-agent review → deterministic gating → adoption at a new context boundary**
+
+The personality can evolve without drifting merely because of one comment, one anomalous behavior, or maintenance self-repetition.
+
+### Public-repository boundary
+
+The public baseline does not currently ship the production Self Model store, Curator, or maintenance runtime. This document exposes only the sanitized architecture and engineering trade-offs; private personality content, real evidence, and production databases are not published.
+
+---
+
 ## Shared principles
 
 The source-product iteration converged on several recurring rules:
