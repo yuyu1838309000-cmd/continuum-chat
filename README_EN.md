@@ -16,11 +16,13 @@ The public repository is **not the complete production backend** of the source p
 - **Evaluation / observability:** local tests, privacy scanning, usage analytics, and deterministic mock flows
 - **Sanitized product UI:** chat/reasoning/tool presentation, history, Memory, context/settings, model/provider, MCP/plugins/tools, calendar/diary, and other content surfaces
 
+> **Portfolio refresh (2026-09-29):** the public repository intentionally remains a runnable, reviewable baseline while the source product continues to evolve. More advanced long-running-agent mechanisms—provider-visible Memory receipts, tool execution receipts, immutable handoff / Context inspection, finite Pending lifecycles, and single-owner proactive execution—are documented as sanitized [source-product case studies](docs/CASE_STUDIES_EN.md) instead of being copied wholesale into the public backend.
+
 **Stack:** Flutter · FastAPI · SQLite · Python · Dart
 
 [![CI](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml/badge.svg)](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml)
 
-[Quick start](#quick-start) · [30-second code tour](#30-second-code-tour) · [Product preview](#product-preview) · [Architecture](#architecture)
+[Quick start](#quick-start) · [30-second code tour](#30-second-code-tour) · [Source-product case studies](docs/CASE_STUDIES_EN.md) · [Product preview](#product-preview) · [Architecture](#architecture)
 
 ## 30-second code tour
 
@@ -76,7 +78,7 @@ flowchart TB
 
 In the public baseline, Runtime owns the canonical transcript, Context Epochs, provider interaction, and usage; Memory owns memory cards and deterministic recall; MCP invocation is manual. State / Environment and Trigger are shown as architectural boundaries and extension points. **This does not claim that the public backend already implements a complete autonomous agent loop.**
 
-More detail: [Architecture](docs/ARCHITECTURE.md) · [Configuration](docs/CONFIGURATION.md) · [Security](SECURITY.md) · [Privacy](docs/PRIVACY.md)
+More detail: [Architecture](docs/ARCHITECTURE.md) · [Source-product case studies](docs/CASE_STUDIES_EN.md) · [Configuration](docs/CONFIGURATION.md) · [Security](SECURITY.md) · [Privacy](docs/PRIVACY.md)
 
 ## What this project is / is not
 
