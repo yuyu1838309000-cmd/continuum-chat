@@ -22,7 +22,7 @@ Continuum Chat 是一个面向**长期个人 Agent**的应用级 **LLM Agent Har
 
 [![CI](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml/badge.svg)](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml)
 
-[快速开始](#快速开始) · [30 秒代码导览](#30-秒代码导览) · [成果预览](#成果预览) · [系统架构](#系统架构)
+[快速开始](#快速开始) · [30 秒代码导览](#30-秒代码导览) · [源项目工程案例](docs/CASE_STUDIES.md) · [成果预览](#成果预览) · [系统架构](#系统架构)
 
 ## 30 秒代码导览
 
@@ -78,7 +78,7 @@ flowchart TB
 
 公开基线中的 Runtime 负责 canonical transcript、Context Epoch、Provider 交互与 usage；Memory 负责记忆卡与确定性 recall；MCP 采用手动调用。State / Environment 与 Trigger 在这里作为产品架构边界和扩展位呈现，**不等于公开后端已经实现完整自主 Agent 循环**。
 
-进一步说明：[架构](docs/ARCHITECTURE.md) · [配置](docs/CONFIGURATION.md) · [安全](SECURITY.md) · [隐私](docs/PRIVACY.md)
+进一步说明：[架构](docs/ARCHITECTURE.md) · [源项目工程案例](docs/CASE_STUDIES.md) · [配置](docs/CONFIGURATION.md) · [安全](SECURITY.md) · [隐私](docs/PRIVACY.md)
 
 ## 这个项目是什么 / 不是什么
 
