@@ -14,7 +14,7 @@ Continuum Chat 是一个面向**长期个人 Agent**的应用级 **LLM Agent Har
 - **Tools / MCP**：手动 stdio 工具发现与调用，另有基础 JSON-RPC-over-HTTP 适配
 - **Provider layer**：OpenAI-compatible Provider 适配、SSE 归一化与 Token usage 记录
 - **Evaluation / observability**：本地测试、隐私扫描、usage analytics 与可复现 Mock 流程
-- **Sanitized product UI**：聊天/推理/工具呈现、历史、Memory、上下文/设置、模型/Provider、MCP/插件/工具、日历/日记与其他内容界面
+- **Sanitized product UI snapshot**：保留公开快照中的聊天/推理/工具呈现、历史、Memory、上下文/设置、模型/Provider、MCP/插件/工具、日历/日记与其他主要界面
 
 > **作品集更新（2026-09-29）**：公开仓库继续保持可运行、可审查的精简基线；源产品已经继续演进到 Memory 注入回执、Tool execution receipt、Context handoff / Inspector、有限 Pending 生命周期与主动行为 ownership 等更复杂的长期 Agent 机制。为了不把私人生产逻辑直接公开，这些能力先以脱敏案例记录在 [源项目工程案例](docs/CASE_STUDIES.md) 中，而不是整套复制进公开后端。
 
@@ -40,7 +40,7 @@ Continuum Chat 是一个面向**长期个人 Agent**的应用级 **LLM Agent Har
 
 ## 系统架构
 
-从产品视角，Continuum Chat 将系统拆成三层：**Product / UI → Agent Harness → LLM / Provider**。公开仓库完整保留产品层结构，并公开 Harness 中可安全复现的核心子集。
+从产品视角，Continuum Chat 将系统拆成三层：**Product / UI → Agent Harness → LLM / Provider**。公开仓库保留一个脱敏的产品层快照，并公开 Harness 中可安全复现的核心子集；源产品后续新增界面与生命周期机制不自动同步到这里。
 
 ```mermaid
 flowchart TB
@@ -185,7 +185,7 @@ flutter run
 | Provider | 离线 Mock Provider + 可配置 OpenAI-compatible Endpoint |
 | MCP / Tools | 手动 stdio MCP 工具发现/调用；可选基础 JSON-RPC-over-HTTP 适配；无自动模型工具执行 |
 | Analytics | 每日消息量与 Provider 返回的 input/output Token；Mock usage 仅为占位数据 |
-| Mobile | 脱敏完整 Flutter 前端：保留聊天/推理/工具呈现、历史、Memory、上下文/设置、模型/Provider、MCP/插件/工具、日历/日记与其他内容界面；高级界面可能需要参考后端之外的服务 |
+| Mobile | 脱敏 Flutter 产品前端快照：保留聊天/推理/工具呈现、历史、Memory、上下文/设置、模型/Provider、MCP/插件/工具、日历/日记等主要界面；源产品后续新增界面不会自动同步，高级界面可能需要参考后端之外的服务 |
 | Security | loopback 默认值；非 loopback 必须配置 Bearer Token |
 | Privacy | Runtime 状态默认不入 Git，并提供自动隐私 / secret gate |
 
@@ -208,7 +208,7 @@ MCP stdio 会以 Runtime 进程账户的权限启动本地可执行程序，Cont
 ## 仓库结构
 
 ```text
-mobile/              脱敏完整 Flutter 前端（models、pages、services、utils、widgets）
+mobile/              脱敏 Flutter 产品前端快照（models、pages、services、utils、widgets）
 server/              Runtime、Provider adapter、history、MCP
 memory/              Memory 服务与本地 recall
 config/              安全的 Provider 示例；真实本地配置不入 Git
