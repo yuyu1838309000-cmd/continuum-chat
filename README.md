@@ -16,13 +16,25 @@ Continuum Chat 是一个面向**长期个人 Agent**的应用级 **LLM Agent Har
 - **Evaluation / observability**：本地测试、隐私扫描、usage analytics 与可复现 Mock 流程
 - **Sanitized product UI snapshot**：保留公开快照中的聊天/推理/工具呈现、历史、Memory、上下文/设置、模型/Provider、MCP/插件/工具、日历/日记与其他主要界面
 
-> **作品集更新（2026-09-29）**：公开仓库继续保持可运行、可审查的精简基线；源产品已经继续演进到 Memory 注入回执、Tool execution receipt、Context handoff / Inspector、有限 Pending 生命周期与主动行为 ownership 等更复杂的长期 Agent 机制。为了不把私人生产逻辑直接公开，这些能力先以脱敏案例记录在 [源项目工程案例](docs/CASE_STUDIES.md) 中，而不是整套复制进公开后端。
+### 求职与评审者速览（2026-10-08）
+
+**项目角色：** 负责长期 Agent 的需求分析、系统规则与方案取舍、故障复现、模型/Prompt 对比、测试设计和验收；工程实现主要通过 Codex 等 Coding Agent 协作完成。这个作品展示的是 **AI 应用设计、Agent 工作流与工程验证能力**，并不声称独立完成所有生产代码或基础模型训练。
+
+| 典型问题 | 在真实源产品中的解决方向 | 公开证据 |
+| --- | --- | --- |
+| 长期记忆乱写、漏召回、错误升温 | Scene-first 写入与严格准入；Related/Ambient 分路；区分检索、注入和真实激活 | [案例 7、8](docs/CASE_STUDIES.md) |
+| 工具做完后下一轮不记得结果 | 工具执行回执、有限 Pending、行动前历史检查 | [案例 2、4、8](docs/CASE_STUDIES.md) |
+| 长对话被后台信息污染 | 对最终 Provider 输入做审计，保留真实对话原文，隔离历史后台状态 | [案例 3、9](docs/CASE_STUDIES.md) |
+
+**状态边界：** 本仓库可运行的是脱敏参考实现；源产品 **已上线并验证** 的包括 Memory VNext 召回、Scene-first Writer、主动/行动前记忆和部分 Context 观测链路，相关源产品实现并未完整开源。记忆整体重建目前仍在 **R4 人工审查**，未执行最终写入；Context Inspector 部分前端界面仍在迭代。以上状态不能理解为公开 Demo 已具备所有生产能力。
+
+> **作品集更新（2026-10-08）**：公开仓库继续保持可运行、可审查的精简基线；源产品已继续推进至 Memory VNext、Scene-first Writer、分层召回与激活、工具执行连续性及 Context 可观测性等机制。为了不把私人生产逻辑直接公开，这些能力先以脱敏案例记录在 [源项目工程案例](docs/CASE_STUDIES.md) 中，而不是整套复制进公开后端。
 
 **技术栈：** Flutter · FastAPI · SQLite · Python · Dart
 
 [![CI](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml/badge.svg)](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml)
 
-[快速开始](#快速开始) · [30 秒代码导览](#30-秒代码导览) · [源项目工程案例](docs/CASE_STUDIES.md) · [成果预览](#成果预览) · [系统架构](#系统架构)
+[招聘者速览](#求职与评审者速览2026-10-08) · [快速开始](#快速开始) · [30 秒代码导览](#30-秒代码导览) · [源项目工程案例](docs/CASE_STUDIES.md) · [成果预览](#成果预览) · [系统架构](#系统架构)
 
 ## 30 秒代码导览
 
