@@ -207,6 +207,72 @@ The public baseline does not currently ship the production Self Model store, Cur
 
 ---
 
+## 7. Scene-first Memory: write from grounded experiences, not every turn
+
+### Problem
+
+The earlier writing pipeline could promote routine conversation fragments into long-term memory. A continuous experience could also be fragmented by technical conversation-window boundaries, increasing duplicates and retrieval noise.
+
+### Design and trade-offs
+
+- Keep raw events as immutable sources of truth. Scenes are rebuildable, source-linked experience structures that may cross Context Epochs and retain revision/boundary provenance.
+- When a Scene finalizes, decide among `scene_only / promote_memory / pending / drop_scene` rather than writing a new memory for every exchange.
+- Reuse strict evidence, scope, lineage, and idempotency gates before promoting or updating a memory. Automatically maintained content must not override manually protected memories.
+- Allow local re-review of derived Scene boundaries without rewriting raw history.
+
+### Verified result and boundary
+
+The source product's **Scene-first Writer took over scheduled writes on 2026-10-04**. A subsequent fix restored a missing final-commit consumer, and the flow was validated for both new writes and evidence-grounded updates to existing memories. Scene boundary repair, admission checks, and retry paths have focused regression evidence.
+
+The public reference still includes only an independent Memory service with deterministic recall; **the production Scene/Writer pipeline is not bundled here**. This is not a performance claim for the public demo.
+
+---
+
+## 8. Retrieval, ambient surfacing, activation, and pre-action checks are different layers
+
+### Problem
+
+Being retrieved is not the same as being seen by the model; being injected is not evidence that a memory has become important again. Conflating them in a `hit`/heat score creates feedback loops. Unrelated ambient memories can also disrupt a task.
+
+### Design and trade-offs
+
+- **Related** selects evidence based on the current request and explicit historical references; **Ambient / Resonance** can surface a small amount of past context under separate eligibility and cooldown rules.
+- Track retrieval candidates, provider-visible injection, and genuine activation as distinct events. Retrieval/injection do not automatically reheat memories; explicit user reactivation and real updates are evaluated separately.
+- Prepare bounded recall before the first model reasoning pass on proactive turns. For potentially mutating tools, perform a sanitized, read-only historical preflight before allowing a repeat action.
+- Prefer abstaining on ambiguous semantic matches; an optional reranker is not automatically enabled globally based on a few promising probes.
+
+### Verified result and boundary
+
+Related recall, Ambient/Resonance, proactive pre-recall, and pre-action checks were deployed and regression-checked in the source product. **Legacy scheduled memory-lifecycle logic has not been fully replaced**, so this does not claim a complete migration of all heat/archival rules. The public reference neither auto-injects Memory nor runs an autonomous tool loop.
+
+---
+
+## 9. Context observability: inspect what the provider actually receives
+
+### Problem
+
+Over a long conversation, historical tool output, backend state, and no-response bookkeeping can accidentally re-enter later requests as if they were conversational examples. This expands the prompt and can distort behavior while the real conversation stays unchanged.
+
+### Design and trade-offs
+
+- Place a **Context Inspector** near the actual provider-send boundary instead of relying only on the theoretical context builder.
+- Preserve all real user/assistant speech inside the active epoch, while excluding historical backend bookkeeping from few-shot-style replay. Current action receipts still have a separate bounded path.
+- Reuse the existing Inspector to trace Scene boundary decisions, reflective proposals, and pre-action checks rather than inventing a second diagnostics system.
+
+### Verified result and boundary
+
+In one sanitized source-product regression, projected messages fell from roughly **468 to 371** and historical system messages from **101 to 4**, while retaining all **367** actual user/assistant messages. The fix has focused tests and production load evidence. This is **one case study, not a general performance benchmark**.
+
+Backend observation and runtime details were validated; **parts of the Context Inspector UI are still being developed**. The full production Inspector is not shipped in the public repository.
+
+---
+
+## In review: full memory reorganization
+
+The source product has prepared a staged content audit, duplicate-identity review, and hierarchical organization proposals with a human-review interface. **As of 2026-10-08 it remains at an R4 human-review gate. Review actions write only review artifacts; there has been no R5 production cutover or replacement of canonical memory data.** This is ongoing work, not a deployed feature. Private memory text, relationship details, and production datasets are deliberately excluded.
+
+---
+
 ## Shared principles
 
 The source-product iteration converged on several recurring rules:

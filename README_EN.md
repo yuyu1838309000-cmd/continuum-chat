@@ -16,13 +16,25 @@ The public repository is **not the complete production backend** of the source p
 - **Evaluation / observability:** local tests, privacy scanning, usage analytics, and deterministic mock flows
 - **Sanitized product UI snapshot:** preserves the major chat/reasoning/tool, history, Memory, context/settings, model/provider, MCP/plugin/tool, calendar/diary, and content surfaces from the public snapshot
 
-> **Portfolio refresh (2026-09-29):** the public repository intentionally remains a runnable, reviewable baseline while the source product continues to evolve. More advanced long-running-agent mechanisms—provider-visible Memory receipts, tool execution receipts, immutable handoff / Context inspection, finite Pending lifecycles, single-owner proactive execution, and an evidence-gated Self Model / personality-maintenance loop—are documented as sanitized [source-product case studies](docs/CASE_STUDIES_EN.md) instead of being copied wholesale into the public backend.
+### For recruiters and technical reviewers (2026-10-08)
+
+**My contribution:** product requirements, behavioral rules and trade-offs for long-running agents; failure reproduction, model/prompt comparisons, test design, and acceptance checks. Most implementation work was carried out collaboratively with Coding Agents such as Codex. This portfolio demonstrates **AI application design, agent workflows, and engineering validation**; it does not claim sole authorship of all production code or foundation-model training.
+
+| Real-world problem | Approach in the source product | Public evidence |
+| --- | --- | --- |
+| Noisy long-term memory, missed recall, false activation | Scene-first writing with evidence gates; separate related/ambient recall; distinguish retrieval, injection, and genuine activation | [Cases 7–8](docs/CASE_STUDIES_EN.md) |
+| Tools finish but the following turn loses the outcome | Execution receipts, finite Pending, pre-action history checks | [Cases 2, 4, 8](docs/CASE_STUDIES_EN.md) |
+| Long-running conversations accumulate backend noise | Audit the final provider payload; preserve real conversation messages while separating historical backend bookkeeping | [Cases 3, 9](docs/CASE_STUDIES_EN.md) |
+
+**Status boundary:** this repository runs a sanitized reference implementation. The source product has **deployed and validated** Memory VNext retrieval, a Scene-first writer, proactive/pre-action recall, and some context-observability paths; those advanced source implementations are **not fully open-sourced here**. A full memory reorganization is still at an **R4 human-review gate**, without final write-through. Parts of the Context Inspector UI remain in development. None of these statements implies the public demo already ships every production capability.
+
+> **Portfolio refresh (2026-10-08):** the public repository intentionally remains a runnable, reviewable baseline while the source product continues to evolve. More advanced long-running-agent mechanisms—including Memory VNext, Scene-first writing, layered recall/activation, tool execution continuity, and context observability—are documented as sanitized [source-product case studies](docs/CASE_STUDIES_EN.md) instead of being copied wholesale into the public backend.
 
 **Stack:** Flutter · FastAPI · SQLite · Python · Dart
 
 [![CI](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml/badge.svg)](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml)
 
-[Quick start](#quick-start) · [30-second code tour](#30-second-code-tour) · [Source-product case studies](docs/CASE_STUDIES_EN.md) · [Product preview](#product-preview) · [Architecture](#architecture)
+[Reviewer guide](#for-recruiters-and-technical-reviewers-2026-10-08) · [Quick start](#quick-start) · [30-second code tour](#30-second-code-tour) · [Source-product case studies](docs/CASE_STUDIES_EN.md) · [Product preview](#product-preview) · [Architecture](#architecture)
 
 ## 30-second code tour
 
