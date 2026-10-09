@@ -267,9 +267,43 @@ Backend observation and runtime details were validated; **parts of the Context I
 
 ---
 
-## In review: full memory reorganization
+## 10. Memory R5: safely migrating a reviewed historical-memory rebuild
 
-The source product has prepared a staged content audit, duplicate-identity review, and hierarchical organization proposals with a human-review interface. **As of 2026-10-08 it remains at an R4 human-review gate. Review actions write only review artifacts; there has been no R5 production cutover or replacement of canonical memory data.** This is ongoing work, not a deployed feature. Private memory text, relationship details, and production datasets are deliberately excluded.
+### Problem
+
+Long-running Memory records can accumulate duplicate identities and complex revision/evidence relationships. Production conversations may also continue between human review and deployment. A bulk overwrite would obscure provenance and rollback.
+
+### Design and trade-offs
+
+- R1–R4 covered inventory, identity proposals and human review; R5 revalidated approved semantic inputs against current canonical revisions.
+- Approved changes became canonical revisions, soft-trash operations, lineage edges and a Water organization graph, with backup and rollback receipts retained.
+- Canonical storage, VNext retrieval-index consistency and live read endpoints were checked independently.
+
+### Verified result and boundary
+
+**The source product completed its R5 cutover on 2026-10-09.** Preflight checked **549 cards** and supporting evidence. The production cutover included **452 coalesced revisions, 28 soft-trash changes and 4 active lineage edges**. The Water graph contains **5 Lakes, 18 Streams and 545 memberships**; VNext valid-index reconciliation reached **518/518**, and the production Water and VNext read endpoints passed live checks.
+
+These are figures from **one source-product migration**, not public-demo scale or a general accuracy benchmark. Automated new-topic Water growth is not yet live. No private Memory text, real conversation content, relationship details or production databases are published.
+
+---
+
+## 11. Multi-provider transport: verify streaming responses and measured cache behavior
+
+### Problem
+
+After adding the native Gemini API in the source product, a real reply could be returned by the model while the app displayed "no response." Tool-continuation format differences and low long-context cache hits were also observed.
+
+### Design and trade-offs
+
+- Replay frozen sanitized requests and inspect the actual SSE events. A CRLF event-framing error was fixed, including delimiters split across network chunks.
+- Normalize native function-call / function-response objects into the internal tool-continuation contract and verify subsequent rounds.
+- Use provider-reported usage to measure explicit caching while preserving canonical history and complete-request fallback on cache errors.
+
+### Verified result and boundary
+
+Focused streaming and tool-continuation regressions passed in the source product. In **one fixed input of approximately 15,848 tokens**, an explicit-cache experiment reported **14,628 cached tokens (92.3%)**. This observation is **not a general cache-hit average or cost guarantee**.
+
+The public reference provides a compact OpenAI-compatible adapter and mock flow; it **does not include the production native Gemini transport or cache implementation**.
 
 ---
 
