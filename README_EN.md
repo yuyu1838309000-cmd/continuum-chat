@@ -16,25 +16,44 @@ The public repository is **not the complete production backend** of the source p
 - **Evaluation / observability:** local tests, privacy scanning, usage analytics, and deterministic mock flows
 - **Sanitized product UI snapshot:** preserves the major chat/reasoning/tool, history, Memory, context/settings, model/provider, MCP/plugin/tool, calendar/diary, and content surfaces from the public snapshot
 
-### For recruiters and technical reviewers (2026-10-08)
+### For recruiters and technical reviewers (2026-10-09)
 
 **My contribution:** product requirements, behavioral rules and trade-offs for long-running agents; failure reproduction, model/prompt comparisons, test design, and acceptance checks. Most implementation work was carried out collaboratively with Coding Agents such as Codex. This portfolio demonstrates **AI application design, agent workflows, and engineering validation**; it does not claim sole authorship of all production code or foundation-model training.
+
+**Source-product capability map (distinct from the public demo):**
+
+| Area | Actual source-product capability or stage |
+| --- | --- |
+| Chat / Runtime | Server-owned conversations, generation lifecycle, ContextEpochs, streaming/tool events, edit/regenerate/cancel/recovery |
+| Prompt / Context | Prompt Workspace, Handoff, Working Memory, final provider-input inspection and duplicate removal |
+| Long-term Memory | Raw evidence, revisions, Scene-first Writer, Gatekeeper, lexical/vector recall, related/ambient/pre-action retrieval |
+| Memory governance / Water | R5 production cutover completed on 2026-10-09; 5 Lakes, 18 Streams, 545 memberships; automated new-topic growth unfinished |
+| Proactivity and planning | Contact triggers, free activities, Trigger / Self Plan, finite Pending, durable action receipts |
+| Self Model | Independent evidence, review suggestions, maturity gates and context-boundary adoption |
+| MCP / devices | Execution continuity, Android DeviceBridge and capability routing; public MCP remains manual |
+| Model integration | Native Gemini API, DeepSeek routing, SSE/tool continuation, provider usage and cache optimization |
+| Product / life surfaces | Android chat, history, Memory, calendar, diary, reading, music, notifications and phone tools; maturity differs |
+| Evaluation / new app | Historical replays, focused regressions, deployment and privacy checks; Compose client is experimental, not a replacement for production Flutter |
+
+**The following are representative problems, not the full feature list:**
 
 | Real-world problem | Approach in the source product | Public evidence |
 | --- | --- | --- |
 | Noisy long-term memory, missed recall, false activation | Scene-first writing with evidence gates; separate related/ambient recall; distinguish retrieval, injection, and genuine activation | [Cases 7–8](docs/CASE_STUDIES_EN.md) |
 | Tools finish but the following turn loses the outcome | Execution receipts, finite Pending, pre-action history checks | [Cases 2, 4, 8](docs/CASE_STUDIES_EN.md) |
 | Long-running conversations accumulate backend noise | Audit the final provider payload; preserve real conversation messages while separating historical backend bookkeeping | [Cases 3, 9](docs/CASE_STUDIES_EN.md) |
+| R5 historical-memory cutover | Human review, canonical revisions, Water graph, index reconciliation and rollback evidence | [Case 10](docs/CASE_STUDIES_EN.md) |
+| Native transport and cache faults | SSE framing, tool continuation and provider-usage reconciliation | [Case 11](docs/CASE_STUDIES_EN.md) |
 
-**Status boundary:** this repository runs a sanitized reference implementation. The source product has **deployed and validated** Memory VNext retrieval, a Scene-first writer, proactive/pre-action recall, and some context-observability paths; those advanced source implementations are **not fully open-sourced here**. A full memory reorganization is still at an **R4 human-review gate**, without final write-through. Parts of the Context Inspector UI remain in development. None of these statements implies the public demo already ships every production capability.
+**Status boundary:** this repository runs a sanitized reference implementation. The source product has **deployed and validated** Memory VNext retrieval, a Scene-first writer, proactive/pre-action recall, and some context-observability paths; those advanced source implementations are **not fully open-sourced here**. The historical-memory rebuild completed its **R5 production cutover on 2026-10-09**. Automatic Water topic growth is not live, and the new daily maintenance schedule still needs natural-run observation. Parts of the Context Inspector UI remain in development. None of these statements implies the public demo already ships every production capability.
 
-> **Portfolio refresh (2026-10-08):** the public repository intentionally remains a runnable, reviewable baseline while the source product continues to evolve. More advanced long-running-agent mechanisms—including Memory VNext, Scene-first writing, layered recall/activation, tool execution continuity, and context observability—are documented as sanitized [source-product case studies](docs/CASE_STUDIES_EN.md) instead of being copied wholesale into the public backend.
+> **Portfolio refresh (2026-10-09):** the public repository intentionally remains a runnable, reviewable baseline while the source product continues to evolve. More advanced long-running-agent mechanisms—including Memory VNext, Scene-first writing, layered recall/activation, tool execution continuity, and context observability—are documented as sanitized [source-product case studies](docs/CASE_STUDIES_EN.md) instead of being copied wholesale into the public backend.
 
 **Stack:** Flutter · FastAPI · SQLite · Python · Dart
 
 [![CI](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml/badge.svg)](https://github.com/yuyu1838309000-cmd/continuum-chat/actions/workflows/ci.yml)
 
-[Reviewer guide](#for-recruiters-and-technical-reviewers-2026-10-08) · [Quick start](#quick-start) · [30-second code tour](#30-second-code-tour) · [Source-product case studies](docs/CASE_STUDIES_EN.md) · [Product preview](#product-preview) · [Architecture](#architecture)
+[Reviewer guide](#for-recruiters-and-technical-reviewers-2026-10-09) · [Quick start](#quick-start) · [30-second code tour](#30-second-code-tour) · [Source-product case studies](docs/CASE_STUDIES_EN.md) · [Product preview](#product-preview) · [Architecture](#architecture)
 
 ## 30-second code tour
 
@@ -118,6 +137,7 @@ The following numbers come from long-running iteration on the source product and
 - proactive trigger-policy regression: **96/96 PASS**
 - identified roughly **34%–39%** extra duplicated history in selected real branches
 - Runtime migration covered **35 conversation windows and 4,907 historical messages**
+- Source-product Memory R5 cutover: **5 Lakes, 18 Streams, 545 memberships** and VNext valid-index reconciliation **518/518**; these are not reproducible public-demo datasets
 
 ## Product preview
 
